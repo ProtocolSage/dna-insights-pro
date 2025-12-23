@@ -225,12 +225,12 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   // Vitamin D
   const cyp2r1 = getGenotype(genotypes, 'rs10741657'); // CYP2R1
   const gc1 = getGenotype(genotypes, 'rs2282679'); // GC
-  const vdr = getGenotype(genotypes, 'rs731236'); // VDR TaqI
-  
+  // Note: VDR rs731236 (TaqI) may be added in future for receptor sensitivity
+
   let vitaminDStatus: 'high_risk' | 'moderate_risk' | 'low_risk' | 'optimal' = 'low_risk';
   let vitaminDDose = '1000-2000 IU daily';
   let vitaminDInterpretation = 'Standard vitamin D supplementation recommended.';
-  
+
   if (cyp2r1 === 'GG') {
     vitaminDStatus = 'high_risk';
     vitaminDDose = '2000-4000 IU daily';
@@ -247,7 +247,7 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   let secretorStatus: 'non-secretor' | 'secretor' | 'unknown' = 'unknown';
   let b12Interpretation = 'Standard B12 intake adequate.';
   let b12Form = 'Any form of B12';
-  
+
   if (fut2 === 'AA') {
     b12Status = 'high_risk';
     secretorStatus = 'non-secretor';
@@ -264,13 +264,13 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   // Folate (MTHFR)
   const mthfr677 = getGenotype(genotypes, 'rs1801133'); // C677T
   const mthfr1298 = getGenotype(genotypes, 'rs1801131'); // A1298C
-  
+
   let folateStatus: 'high_risk' | 'moderate_risk' | 'low_risk' | 'optimal' = 'low_risk';
   let mthfrC677TStatus: 'TT' | 'CT' | 'CC' | 'unknown' = 'unknown';
   let mthfrA1298CStatus: 'CC' | 'AC' | 'AA' | 'unknown' = 'unknown';
   let folateInterpretation = 'Standard folate intake adequate.';
   let folateForm = 'Folic acid or methylfolate';
-  
+
   // C677T: G=C allele, A=T allele
   if (mthfr677 === 'AA') {
     folateStatus = 'high_risk';
@@ -285,7 +285,7 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   } else if (mthfr677 === 'GG') {
     mthfrC677TStatus = 'CC';
   }
-  
+
   // A1298C: T=A allele, G=C allele
   if (mthfr1298 === 'GG') {
     mthfrA1298CStatus = 'CC';
@@ -298,7 +298,7 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   } else if (mthfr1298 === 'TT') {
     mthfrA1298CStatus = 'AA';
   }
-  
+
   // Compound heterozygote
   if (mthfrC677TStatus === 'CT' && mthfrA1298CStatus === 'AC') {
     folateStatus = 'high_risk';
@@ -308,11 +308,11 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
   // Vitamin A
   const bcmo1_1 = getGenotype(genotypes, 'rs6013897'); // BCMO1
   const bcmo1_2 = getGenotype(genotypes, 'rs11645428'); // BCMO1
-  
+
   let vitaminAStatus: 'poor_converter' | 'moderate_converter' | 'good_converter' | 'unknown' = 'unknown';
   let vitaminAInterpretation = '';
   let vitaminARecommendations: string[] = [];
-  
+
   if (bcmo1_1 === 'AA' || bcmo1_2 === 'AA') {
     vitaminAStatus = 'poor_converter';
     vitaminAInterpretation = '⚠️ IMPORTANT: Poor beta-carotene converter. CANNOT efficiently make vitamin A from carrots/sweet potatoes. MUST get preformed vitamin A from animal sources or supplements.';
@@ -383,12 +383,12 @@ function analyzeVitamins(genotypes: Genotype[]): VitaminAnalysis {
 function analyzeMinerals(genotypes: Genotype[]): MineralAnalysis {
   const hfeH63D = getGenotype(genotypes, 'rs1799945'); // H63D
   const hfeC282Y = getGenotype(genotypes, 'rs1800562'); // C282Y
-  
+
   let ironStatus: 'overload_risk' | 'normal' | 'deficiency_risk' = 'normal';
   let hemochromatosisRisk: 'high' | 'moderate' | 'low' = 'low';
   let ironInterpretation = 'Normal iron metabolism expected.';
   let ironRecommendations: string[] = [];
-  
+
   // C282Y is most critical
   if (hfeC282Y === 'AA') {
     ironStatus = 'overload_risk';
@@ -414,7 +414,7 @@ function analyzeMinerals(genotypes: Genotype[]): MineralAnalysis {
       'Monitor for elevation'
     ];
   }
-  
+
   // H63D
   if (hfeH63D === 'GG') {
     if (hemochromatosisRisk === 'low') {
@@ -429,7 +429,7 @@ function analyzeMinerals(genotypes: Genotype[]): MineralAnalysis {
       ];
     }
   }
-  
+
   // Compound heterozygote (C282Y + H63D)
   if (hfeC282Y === 'GA' && hfeH63D === 'CG') {
     hemochromatosisRisk = 'high';
@@ -467,7 +467,7 @@ function analyzeMacronutrients(genotypes: Genotype[]): MacronutrientAnalysis {
   let exerciseBenefit: 'high' | 'moderate' | 'low' = 'moderate';
   let proteinBenefit: 'high' | 'moderate' | 'low' = 'moderate';
   let weightRecommendations: string[] = [];
-  
+
   if (fto === 'AA') {
     obesityRisk = 'high';
     exerciseBenefit = 'high';
@@ -494,7 +494,7 @@ function analyzeMacronutrients(genotypes: Genotype[]): MacronutrientAnalysis {
   const tcf7l2 = getGenotype(genotypes, 'rs7903146');
   let diabetesRisk: 'high' | 'moderate' | 'low' = 'low';
   let carbRecommendations: string[] = [];
-  
+
   if (tcf7l2 === 'TT') {
     diabetesRisk = 'high';
     carbRecommendations = [
@@ -519,7 +519,7 @@ function analyzeMacronutrients(genotypes: Genotype[]): MacronutrientAnalysis {
   const apoa2 = getGenotype(genotypes, 'rs5082');
   let satFatSensitive = false;
   let fatRecommendations: string[] = [];
-  
+
   if (apoa2 === 'GG') {
     satFatSensitive = true;
     fatRecommendations = [
@@ -563,7 +563,7 @@ function analyzeFoodIntolerances(genotypes: Genotype[]): FoodIntoleranceAnalysis
   let lactoseStatus: 'intolerant' | 'partial' | 'tolerant' | 'unknown' = 'unknown';
   let lactoseConfidence: 'definitive' | 'likely' | 'uncertain' = 'uncertain';
   let lactoseRecommendations: string[] = [];
-  
+
   if (lct === 'TT') {
     lactoseStatus = 'intolerant';
     lactoseConfidence = 'definitive';
@@ -596,7 +596,7 @@ function analyzeFoodIntolerances(genotypes: Genotype[]): FoodIntoleranceAnalysis
   let caffeineMetabolizer: 'slow' | 'intermediate' | 'fast' | 'unknown' = 'unknown';
   let cardioRisk: 'high_with_intake' | 'neutral' | 'protective' = 'neutral';
   let caffeineRecommendations: string[] = [];
-  
+
   if (cyp1a2 === 'CC') {
     caffeineMetabolizer = 'slow';
     cardioRisk = 'high_with_intake';
@@ -631,7 +631,7 @@ function analyzeFoodIntolerances(genotypes: Genotype[]): FoodIntoleranceAnalysis
   let flushRisk: 'severe' | 'moderate' | 'none' = 'none';
   let cancerRisk: 'very_high_if_drink' | 'moderate' | 'standard' = 'standard';
   let alcoholRecommendations: string[] = [];
-  
+
   if (aldh2 === 'AA') {
     aldh2Status = 'deficient';
     flushRisk = 'severe';
@@ -656,7 +656,7 @@ function analyzeFoodIntolerances(genotypes: Genotype[]): FoodIntoleranceAnalysis
       'Maximum 1-2 drinks/month if any'
     ];
   }
-  
+
   if (adh1b === 'TT') {
     adh1bStatus = 'fast';
     if (aldh2Status === 'deficient' || aldh2Status === 'partial') {
@@ -694,7 +694,7 @@ function analyzeDetoxification(genotypes: Genotype[]): DetoxAnalysis {
   const mthfr = getGenotype(genotypes, 'rs1801133');
   let methylationStatus: 'impaired' | 'moderate' | 'normal' = 'normal';
   let methylationRecommendations: string[] = [];
-  
+
   if (mthfr === 'AA') {
     methylationStatus = 'impaired';
     methylationRecommendations = [
@@ -737,7 +737,7 @@ function analyzeOmega(genotypes: Genotype[]): OmegaAnalysis {
   let conversionStatus: 'poor_converter' | 'moderate_converter' | 'good_converter' | 'unknown' = 'unknown';
   let omegaInterpretation = '';
   let omegaRecommendations: string[] = [];
-  
+
   if (fads1 === 'TT') {
     conversionStatus = 'poor_converter';
     omegaInterpretation = '⚠️ POOR omega-3 converter (ancestral genotype). CANNOT efficiently make EPA/DHA from plant sources.';
@@ -777,7 +777,7 @@ function analyzeTaste(genotypes: Genotype[]): TasteAnalysis {
   const tas2r38 = getGenotype(genotypes, 'rs713598');
   let bitterStatus: 'supertaster' | 'medium_taster' | 'non_taster' | 'unknown' = 'unknown';
   let bitterImplications: string[] = [];
-  
+
   if (tas2r38 === 'CC') {
     bitterStatus = 'supertaster';
     bitterImplications = [
@@ -798,7 +798,7 @@ function analyzeTaste(genotypes: Genotype[]): TasteAnalysis {
 
   const cilantro = getGenotype(genotypes, 'rs72921001');
   let cilantroAversion: 'strong' | 'moderate' | 'none' | 'unknown' = 'unknown';
-  
+
   if (cilantro === 'GG') {
     cilantroAversion = 'strong';
   } else if (cilantro === 'AG') {
@@ -825,7 +825,7 @@ function analyzeTaste(genotypes: Genotype[]): TasteAnalysis {
  */
 function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
   const findings: CriticalFinding[] = [];
-  
+
   // Check for critical variants
   const hfeC282Y = getGenotype(genotypes, 'rs1800562');
   if (hfeC282Y === 'AA') {
@@ -837,7 +837,7 @@ function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
       variants: ['rs1800562']
     });
   }
-  
+
   const mthfr = getGenotype(genotypes, 'rs1801133');
   if (mthfr === 'AA') {
     findings.push({
@@ -848,7 +848,7 @@ function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
       variants: ['rs1801133']
     });
   }
-  
+
   const fut2 = getGenotype(genotypes, 'rs602662');
   if (fut2 === 'AA') {
     findings.push({
@@ -859,7 +859,7 @@ function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
       variants: ['rs602662']
     });
   }
-  
+
   const aldh2 = getGenotype(genotypes, 'rs671');
   if (aldh2 === 'AA' || aldh2 === 'GA') {
     findings.push({
@@ -870,7 +870,7 @@ function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
       variants: ['rs671']
     });
   }
-  
+
   const bcmo1 = getGenotype(genotypes, 'rs6013897');
   if (bcmo1 === 'AA') {
     findings.push({
@@ -890,7 +890,7 @@ function getCriticalFindings(genotypes: Genotype[]): CriticalFinding[] {
  */
 function getDietaryRecommendations(genotypes: Genotype[]): DietaryRecommendation[] {
   const recommendations: DietaryRecommendation[] = [];
-  
+
   const fto = getGenotype(genotypes, 'rs9939609');
   if (fto === 'AA') {
     recommendations.push({
@@ -900,7 +900,7 @@ function getDietaryRecommendations(genotypes: Genotype[]): DietaryRecommendation
       priority: 'high'
     });
   }
-  
+
   const tcf7l2 = getGenotype(genotypes, 'rs7903146');
   if (tcf7l2 === 'TT') {
     recommendations.push({
@@ -910,7 +910,7 @@ function getDietaryRecommendations(genotypes: Genotype[]): DietaryRecommendation
       priority: 'high'
     });
   }
-  
+
   const apoa2 = getGenotype(genotypes, 'rs5082');
   if (apoa2 === 'GG') {
     recommendations.push({
@@ -929,7 +929,7 @@ function getDietaryRecommendations(genotypes: Genotype[]): DietaryRecommendation
  */
 function getSupplementRecommendations(genotypes: Genotype[]): SupplementRecommendation[] {
   const supplements: SupplementRecommendation[] = [];
-  
+
   const cyp2r1 = getGenotype(genotypes, 'rs10741657');
   if (cyp2r1 === 'GG') {
     supplements.push({
@@ -948,7 +948,7 @@ function getSupplementRecommendations(genotypes: Genotype[]): SupplementRecommen
       priority: 'high'
     });
   }
-  
+
   const mthfr = getGenotype(genotypes, 'rs1801133');
   if (mthfr === 'AA') {
     supplements.push({
@@ -959,7 +959,7 @@ function getSupplementRecommendations(genotypes: Genotype[]): SupplementRecommen
       priority: 'critical'
     });
   }
-  
+
   const fut2 = getGenotype(genotypes, 'rs602662');
   if (fut2 === 'AA') {
     supplements.push({
@@ -970,7 +970,7 @@ function getSupplementRecommendations(genotypes: Genotype[]): SupplementRecommen
       priority: 'critical'
     });
   }
-  
+
   const fads1 = getGenotype(genotypes, 'rs174537');
   if (fads1 === 'TT') {
     supplements.push({

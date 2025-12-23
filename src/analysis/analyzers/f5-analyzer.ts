@@ -180,7 +180,7 @@ export function determineF5Genotype(
 
   return {
     rs6025: rs6025,
-    rs6027,
+    rs6027: rs6027 || undefined,
     thrombophiliaRisk,
     vteRiskMultiplier,
     confidence
@@ -247,38 +247,38 @@ export function assessContraceptiveSafety(
  * Generate comprehensive VTE risk assessment
  */
 function generateVTERiskAssessment(
-  vteRiskMultiplier: number,
+  _vteRiskMultiplier: number,
   thrombophiliaRisk: string
 ) {
   const baselineRisk = thrombophiliaRisk === 'Very High'
     ? '5-8% per year (50-80x baseline)'
     : thrombophiliaRisk === 'Elevated'
-    ? '0.5-0.7% per year (5-7x baseline)'
-    : '0.1% per year (general population)';
+      ? '0.5-0.7% per year (5-7x baseline)'
+      : '0.1% per year (general population)';
 
   const withOCPs = thrombophiliaRisk === 'Very High'
     ? '~10-15% per year (EXTREME RISK - CONTRAINDICATED)'
     : thrombophiliaRisk === 'Elevated'
-    ? '~3% per year (30-35x baseline - CONTRAINDICATED)'
-    : '0.3-0.4% per year (3-4x baseline - acceptable risk)';
+      ? '~3% per year (30-35x baseline - CONTRAINDICATED)'
+      : '0.3-0.4% per year (3-4x baseline - acceptable risk)';
 
   const withPregnancy = thrombophiliaRisk === 'Very High'
     ? '~10-15% during pregnancy/postpartum (HIGH RISK)'
     : thrombophiliaRisk === 'Elevated'
-    ? '~2.5% during pregnancy/postpartum (25x baseline)'
-    : '~0.5% during pregnancy/postpartum (5x baseline)';
+      ? '~2.5% during pregnancy/postpartum (25x baseline)'
+      : '~0.5% during pregnancy/postpartum (5x baseline)';
 
   const withSurgery = thrombophiliaRisk === 'Very High'
     ? 'VERY HIGH - Extended prophylaxis essential'
     : thrombophiliaRisk === 'Elevated'
-    ? 'HIGH - Prophylactic anticoagulation strongly recommended'
-    : 'MODERATE - Standard prophylaxis appropriate';
+      ? 'HIGH - Prophylactic anticoagulation strongly recommended'
+      : 'MODERATE - Standard prophylaxis appropriate';
 
   const absoluteRiskEstimate = thrombophiliaRisk === 'Very High'
     ? 'Approximately 5-8 in 100 people with FVL homozygous will develop VTE per year without additional risk factors. With estrogen exposure, risk approaches 10-15%.'
     : thrombophiliaRisk === 'Elevated'
-    ? 'Approximately 5-7 in 1,000 people with FVL heterozygous will develop VTE per year. With estrogen exposure, risk increases to ~3 in 100.'
-    : 'Approximately 1 in 1,000 people in the general population will develop VTE per year.';
+      ? 'Approximately 5-7 in 1,000 people with FVL heterozygous will develop VTE per year. With estrogen exposure, risk increases to ~3 in 100.'
+      : 'Approximately 1 in 1,000 people in the general population will develop VTE per year.';
 
   return {
     baselineRisk,
@@ -294,7 +294,7 @@ function generateVTERiskAssessment(
  */
 function generateSafetyAlerts(
   thrombophiliaRisk: string,
-  contraceptiveSafety: ContraceptiveSafety
+  _contraceptiveSafety: ContraceptiveSafety
 ): string[] {
   const alerts: string[] = [];
 
@@ -336,7 +336,7 @@ function generateSafetyAlerts(
  */
 function generateClinicalRecommendations(
   thrombophiliaRisk: string,
-  contraceptiveSafety: ContraceptiveSafety
+  _contraceptiveSafety: ContraceptiveSafety
 ): string[] {
   const recommendations: string[] = [];
 
@@ -431,10 +431,10 @@ resistance to activated Protein C, a natural anticoagulant, leading to
 increased blood clotting tendency.
 
 ${genotype.thrombophiliaRisk === 'Very High'
-  ? 'You are HOMOZYGOUS for Factor V Leiden (two copies). This confers a 50-80x increased risk of venous thromboembolism (VTE) compared to the general population. Estrogen-containing medications are ABSOLUTELY CONTRAINDICATED.'
-  : genotype.thrombophiliaRisk === 'Elevated'
-  ? 'You are HETEROZYGOUS for Factor V Leiden (one copy). This confers a 5-7x increased risk of VTE. While absolute risk remains low (~0.5-0.7% per year), estrogen contraceptives increase this to ~3% per year and are CONTRAINDICATED.'
-  : 'You do NOT carry Factor V Leiden. Your baseline VTE risk is normal (~0.1% per year). All contraceptive options are appropriate from a thrombophilia perspective.'}
+      ? 'You are HOMOZYGOUS for Factor V Leiden (two copies). This confers a 50-80x increased risk of venous thromboembolism (VTE) compared to the general population. Estrogen-containing medications are ABSOLUTELY CONTRAINDICATED.'
+      : genotype.thrombophiliaRisk === 'Elevated'
+        ? 'You are HETEROZYGOUS for Factor V Leiden (one copy). This confers a 5-7x increased risk of VTE. While absolute risk remains low (~0.5-0.7% per year), estrogen contraceptives increase this to ~3% per year and are CONTRAINDICATED.'
+        : 'You do NOT carry Factor V Leiden. Your baseline VTE risk is normal (~0.1% per year). All contraceptive options are appropriate from a thrombophilia perspective.'}
 
 CONTRACEPTIVE SAFETY:
 • Combined OCPs (estrogen + progestin): ${contraceptiveSafety.combinedOCPs}

@@ -4,11 +4,13 @@
 // Drop this into your project and call analyzePGx(genotypes) to get results
 // ============================================================================
 
-import type { Genotype } from './types';
-
 // ============================================================================
 // TYPES
 // ============================================================================
+
+interface Genotype {
+  genotype: string;
+}
 
 export interface StarAlleleDefinition {
   allele: string;

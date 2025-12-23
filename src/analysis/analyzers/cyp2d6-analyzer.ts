@@ -68,7 +68,7 @@
  * - FDA Table of Pharmacogenomic Biomarkers
  */
 
-import { normalizeGenotype, type GeneticProvider, type GenotypeNormalizationResult } from '../utils/genotype-utils';
+import { extractAndNormalize, type GeneticProvider } from '../utils/genotype-utils';
 
 export interface CYP2D6Diplotype {
   allele1: string;
@@ -102,14 +102,6 @@ export interface CYP2D6AnalysisResult {
   limitations: string[];
   guidelines: string[];
   references: string[];
-  normalizedGenotypes: {
-    rs3892097?: GenotypeNormalizationResult; // *4
-    rs28371725?: GenotypeNormalizationResult; // *41
-    rs1065852?: GenotypeNormalizationResult;  // *10
-    rs5030655?: GenotypeNormalizationResult;  // *6
-    rs28371706?: GenotypeNormalizationResult; // *17
-    rs16947?: GenotypeNormalizationResult;    // *2 marker
-  };
 }
 
 /**
@@ -187,7 +179,7 @@ function activityScoreToPhenotype(activityScore: number): string {
 }
 
 /**
- * Determine CYP2D6 diplotype from genotypes
+ * Determine CYP2D6 diplotype from genotypes - v2 API
  *
  * IMPORTANT: This is a SIMPLIFIED implementation for SNP array data
  * True CYP2D6 diplotyping requires:
@@ -198,41 +190,35 @@ function activityScoreToPhenotype(activityScore: number): string {
  * This analyzer focuses on the most clinically relevant variants detectable from consumer SNP arrays
  */
 export function determineCYP2D6Diplotype(
-  rs3892097: string | null,  // *4 defining SNP (G>A, splicing defect)
-  rs28371725: string | null, // *41 defining SNP (C>T, splicing defect)
-  rs1065852: string | null,  // *10 defining SNP (C>T, P34S)
-  rs5030655: string | null,  // *6 defining SNP (G>A, 1-bp frameshift)
-  rs28371706: string | null, // *17 defining SNP (C>T, T107I)
-  rs16947: string | null,    // *2 haplotype marker (normal function)
-  provider: GeneticProvider = 'unknown'
+  genotypes: Array<{ rsid: string; genotype: string }>
 ): CYP2D6Diplotype {
 
-  // Normalize all genotypes
-  const norm_rs3892097 = normalizeGenotype('rs3892097', rs3892097, provider);   // *4
-  const norm_rs28371725 = normalizeGenotype('rs28371725', rs28371725, provider); // *41
-  const norm_rs1065852 = normalizeGenotype('rs1065852', rs1065852, provider);   // *10
-  const norm_rs5030655 = normalizeGenotype('rs5030655', rs5030655, provider);   // *6
-  const norm_rs28371706 = normalizeGenotype('rs28371706', rs28371706, provider); // *17
-  const norm_rs16947 = normalizeGenotype('rs16947', rs16947, provider);         // *2
+  // Extract and normalize all genotypes
+  const norm_rs3892097 = extractAndNormalize(genotypes, 'rs3892097');   // *4
+  const norm_rs28371725 = extractAndNormalize(genotypes, 'rs28371725'); // *41
+  const norm_rs1065852 = extractAndNormalize(genotypes, 'rs1065852');   // *10
+  const norm_rs5030655 = extractAndNormalize(genotypes, 'rs5030655');   // *6
+  const norm_rs28371706 = extractAndNormalize(genotypes, 'rs28371706'); // *17
+  // Note: rs16947 (*2) not used in current implementation
 
   // Track detected alleles
   const detectedAlleles: string[] = [];
 
   // Check for *4 (rs3892097 A allele, no function)
   // G/G = no *4, G/A = one *4, A/A = two *4
-  const rs3892097_A_count = norm_rs3892097.normalized?.split('').filter(a => a === 'A').length || 0;
+  const rs3892097_A_count = norm_rs3892097?.split('').filter(a => a === 'A').length || 0;
 
   // Check for *41 (rs28371725 T allele, decreased function)
-  const rs28371725_T_count = norm_rs28371725.normalized?.split('').filter(a => a === 'T').length || 0;
+  const rs28371725_T_count = norm_rs28371725?.split('').filter(a => a === 'T').length || 0;
 
   // Check for *10 (rs1065852 T allele, significantly decreased function)
-  const rs1065852_T_count = norm_rs1065852.normalized?.split('').filter(a => a === 'T').length || 0;
+  const rs1065852_T_count = norm_rs1065852?.split('').filter(a => a === 'T').length || 0;
 
   // Check for *6 (rs5030655 A allele, no function)
-  const rs5030655_A_count = norm_rs5030655.normalized?.split('').filter(a => a === 'A').length || 0;
+  const rs5030655_A_count = norm_rs5030655?.split('').filter(a => a === 'A').length || 0;
 
   // Check for *17 (rs28371706 T allele, decreased function)
-  const rs28371706_T_count = norm_rs28371706.normalized?.split('').filter(a => a === 'T').length || 0;
+  const rs28371706_T_count = norm_rs28371706?.split('').filter(a => a === 'T').length || 0;
 
   // SIMPLE DIPLOTYPE DETERMINATION
   // This is a simplified algorithm that handles the most common cases
@@ -246,7 +232,7 @@ export function determineCYP2D6Diplotype(
 
   // Count total variant alleles
   const totalVariants = rs3892097_A_count + rs28371725_T_count + rs1065852_T_count +
-                        rs5030655_A_count + rs28371706_T_count;
+    rs5030655_A_count + rs28371706_T_count;
 
   // CASE 1: No variants detected → *1/*1
   if (totalVariants === 0) {
@@ -370,7 +356,7 @@ export function determineCYP2D6Diplotype(
  * Generate amphetamine-specific recommendations
  * 🔥 PERSONAL RELEVANCE: User takes daily amphetamines for ADHD
  */
-function generateAmphetamineRecommendations(phenotype: string, activityScore: number): CYP2D6DrugRecommendation[] {
+function generateAmphetamineRecommendations(phenotype: string, _activityScore: number): CYP2D6DrugRecommendation[] {
   const recommendations: CYP2D6DrugRecommendation[] = [];
 
   if (phenotype === 'Poor Metabolizer') {
@@ -623,27 +609,11 @@ function generateClinicalSummary(diplotype: CYP2D6Diplotype): string {
  */
 export function analyzeCYP2D6(
   genotypes: Array<{ rsid: string; genotype: string }>,
-  provider: GeneticProvider = 'unknown'
+  _provider: GeneticProvider = '23andme'
 ): CYP2D6AnalysisResult {
 
-  // Extract relevant genotypes
-  const rs3892097 = genotypes.find(g => g.rsid === 'rs3892097')?.genotype || null;   // *4
-  const rs28371725 = genotypes.find(g => g.rsid === 'rs28371725')?.genotype || null; // *41
-  const rs1065852 = genotypes.find(g => g.rsid === 'rs1065852')?.genotype || null;   // *10
-  const rs5030655 = genotypes.find(g => g.rsid === 'rs5030655')?.genotype || null;   // *6
-  const rs28371706 = genotypes.find(g => g.rsid === 'rs28371706')?.genotype || null; // *17
-  const rs16947 = genotypes.find(g => g.rsid === 'rs16947')?.genotype || null;       // *2
-
   // Determine diplotype
-  const diplotype = determineCYP2D6Diplotype(
-    rs3892097,
-    rs28371725,
-    rs1065852,
-    rs5030655,
-    rs28371706,
-    rs16947,
-    provider
-  );
+  const diplotype = determineCYP2D6Diplotype(genotypes);
 
   // Generate drug recommendations
   const drugs = generateDrugRecommendations(diplotype);
@@ -691,16 +661,6 @@ export function analyzeCYP2D6(
     'PharmVar Database: www.pharmvar.org'
   ];
 
-  // Normalized genotypes for output
-  const normalizedGenotypes = {
-    rs3892097: normalizeGenotype('rs3892097', rs3892097, provider),
-    rs28371725: normalizeGenotype('rs28371725', rs28371725, provider),
-    rs1065852: normalizeGenotype('rs1065852', rs1065852, provider),
-    rs5030655: normalizeGenotype('rs5030655', rs5030655, provider),
-    rs28371706: normalizeGenotype('rs28371706', rs28371706, provider),
-    rs16947: normalizeGenotype('rs16947', rs16947, provider)
-  };
-
   return {
     gene: 'CYP2D6',
     diplotype,
@@ -710,7 +670,6 @@ export function analyzeCYP2D6(
     confidence: diplotype.confidence,
     limitations,
     guidelines,
-    references,
-    normalizedGenotypes
+    references
   };
 }

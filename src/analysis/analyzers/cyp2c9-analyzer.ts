@@ -32,7 +32,7 @@
  * - FDA-required pharmacogenetic testing for warfarin
  */
 
-import { normalizeGenotype, type GeneticProvider, type GenotypeNormalizationResult } from '../utils/genotype-utils';
+import { extractAndNormalize, type GeneticProvider } from '../utils/genotype-utils';
 
 export interface CYP2C9Diplotype {
   allele1: string;
@@ -54,9 +54,10 @@ export interface CYP2C9DrugRecommendation {
 }
 
 export interface CYP2C9AnalysisResult {
+  gene: 'CYP2C9';
   diplotype: CYP2C9Diplotype;
+  drugs: CYP2C9DrugRecommendation[]; // v2 standard: "drugs" not "drugRecommendations"
   clinicalSummary: string;
-  drugRecommendations: CYP2C9DrugRecommendation[];
   warfarinDosing: {
     recommendedDose: string;
     titrationGuidance: string;
@@ -65,9 +66,10 @@ export interface CYP2C9AnalysisResult {
   };
   safetyAlerts: string[];
   confidence: 'high' | 'medium' | 'low';
-  normalizedGenotypes: {
-    rs1799853: GenotypeNormalizationResult;
-    rs1057910: GenotypeNormalizationResult;
+  limitations: string[];
+  guidelines: {
+    cpic: string;
+    fda: string[];
   };
 }
 
@@ -132,15 +134,14 @@ function diplotypeToPhenotype(allele1: string, allele2: string): {
 
 /**
  * Determine CYP2C9 diplotype from genotypes
+ * v2 API: Accepts array of genotype objects
  */
 export function determineCYP2C9Diplotype(
-  rs1799853: string | null, // CYP2C9*2
-  rs1057910: string | null, // CYP2C9*3
-  provider: GeneticProvider = 'unknown'
+  genotypes: Array<{ rsid: string; genotype: string }>
 ): CYP2C9Diplotype {
-  // Normalize genotypes
-  const norm6025 = normalizeGenotype('rs1799853', rs1799853, provider);
-  const norm1057910 = normalizeGenotype('rs1057910', rs1057910, provider);
+  // Extract and normalize genotypes
+  const rs1799853 = extractAndNormalize(genotypes, 'rs1799853'); // CYP2C9*2
+  const rs1057910 = extractAndNormalize(genotypes, 'rs1057910'); // CYP2C9*3
 
   let allele1 = '*1';
   let allele2 = '*1';
@@ -148,7 +149,7 @@ export function determineCYP2C9Diplotype(
 
   // If EITHER variant is missing, return unknown (medical-grade safety standard)
   // We cannot reliably determine phenotype without complete genetic data for both variants
-  if (norm6025.normalized === 'Unknown' || norm1057910.normalized === 'Unknown') {
+  if (!rs1799853 || !rs1057910) {
     return {
       allele1: 'Unknown',
       allele2: 'Unknown',
@@ -162,8 +163,8 @@ export function determineCYP2C9Diplotype(
   // rs1799853: C=*1, T=*2
   // rs1057910: A=*1, C=*3
 
-  const has2Variant = norm6025.normalized.includes('T');
-  const has3Variant = norm1057910.normalized.includes('C');
+  const has2Variant = rs1799853.includes('T');
+  const has3Variant = rs1057910.includes('C');
 
   // Build diplotype
   if (!has2Variant && !has3Variant) {
@@ -173,20 +174,20 @@ export function determineCYP2C9Diplotype(
     confidence = 'high';
   } else if (has2Variant && !has3Variant) {
     // Contains *2
-    if (norm6025.normalized === 'C/T') {
+    if (rs1799853 === 'CT') {
       allele1 = '*1';
       allele2 = '*2';
-    } else if (norm6025.normalized === 'T/T') {
+    } else if (rs1799853 === 'TT') {
       allele1 = '*2';
       allele2 = '*2';
     }
     confidence = 'high';
   } else if (!has2Variant && has3Variant) {
     // Contains *3
-    if (norm1057910.normalized === 'A/C') {
+    if (rs1057910 === 'AC') {
       allele1 = '*1';
       allele2 = '*3';
-    } else if (norm1057910.normalized === 'C/C') {
+    } else if (rs1057910 === 'CC') {
       allele1 = '*3';
       allele2 = '*3';
     }
@@ -214,7 +215,7 @@ export function determineCYP2C9Diplotype(
  * Generate warfarin-specific dosing guidance
  */
 function generateWarfarinDosing(diplotype: CYP2C9Diplotype) {
-  const { phenotype, activityScore } = diplotype;
+  const { phenotype, activityScore: _activityScore } = diplotype;
 
   if (phenotype === 'Unknown') {
     return {
@@ -395,23 +396,22 @@ function generateSafetyAlerts(diplotype: CYP2C9Diplotype): string[] {
 }
 
 /**
- * Main CYP2C9 analysis function
+ * Main CYP2C9 analysis function - v2 API
+ *
+ * @param genotypes - Array of genotype objects from 23andMe
+ * @param provider - Data provider ('23andme' or 'unknown')
+ * @returns Comprehensive CYP2C9 analysis results
  */
 export function analyzeCYP2C9(
-  rs1799853: string | null,
-  rs1057910: string | null,
-  provider: GeneticProvider = 'unknown'
+  genotypes: Array<{ rsid: string; genotype: string }>,
+  _provider: GeneticProvider = '23andme'
 ): CYP2C9AnalysisResult {
-  // Normalize genotypes
-  const norm1799853 = normalizeGenotype('rs1799853', rs1799853, provider);
-  const norm1057910 = normalizeGenotype('rs1057910', rs1057910, provider);
-
   // Determine diplotype
-  const diplotype = determineCYP2C9Diplotype(rs1799853, rs1057910, provider);
+  const diplotype = determineCYP2C9Diplotype(genotypes);
 
   // Generate recommendations
   const warfarinDosing = generateWarfarinDosing(diplotype);
-  const drugRecommendations = generateDrugRecommendations(diplotype);
+  const drugs = generateDrugRecommendations(diplotype);
   const safetyAlerts = generateSafetyAlerts(diplotype);
 
   // Clinical summary
@@ -426,28 +426,40 @@ CYP2C9 metabolizes approximately 15% of clinically used drugs, including
 warfarin (the #2 most common cause of drug-related hospitalizations in the US).
 
 ${diplotype.phenotype === 'Poor Metabolizer'
-  ? 'You have SIGNIFICANTLY REDUCED CYP2C9 activity (~5-10% of normal). This causes:\n- 3-5x INCREASED bleeding risk with warfarin\n- Requires 50-75% DOSE REDUCTION for warfarin, NSAIDs, sulfonylureas\n- FDA pharmacogenetic testing recommended before warfarin initiation'
-  : diplotype.phenotype === 'Intermediate Metabolizer'
-  ? 'You have MODERATELY REDUCED CYP2C9 activity (~50-75% of normal). This causes:\n- 2-3x increased bleeding risk with warfarin\n- Requires 25-40% dose reduction for warfarin\n- Consider dose adjustments for NSAIDs and sulfonylureas'
-  : diplotype.phenotype === 'Normal Metabolizer'
-  ? 'You have NORMAL CYP2C9 activity. Standard dosing is appropriate for CYP2C9 substrates.\nWarfarin dosing still requires INR monitoring (other factors affect response).'
-  : 'Your CYP2C9 status could not be determined. Use conservative dosing for CYP2C9 substrates.'}
-
-GENOTYPE DETAILS:
-• rs1799853 (CYP2C9*2): ${norm1799853.normalized} (${norm1799853.confidence} confidence)
-• rs1057910 (CYP2C9*3): ${norm1057910.normalized} (${norm1057910.confidence} confidence)
+      ? 'You have SIGNIFICANTLY REDUCED CYP2C9 activity (~5-10% of normal). This causes:\n- 3-5x INCREASED bleeding risk with warfarin\n- Requires 50-75% DOSE REDUCTION for warfarin, NSAIDs, sulfonylureas\n- FDA pharmacogenetic testing recommended before warfarin initiation'
+      : diplotype.phenotype === 'Intermediate Metabolizer'
+        ? 'You have MODERATELY REDUCED CYP2C9 activity (~50-75% of normal). This causes:\n- 2-3x increased bleeding risk with warfarin\n- Requires 25-40% dose reduction for warfarin\n- Consider dose adjustments for NSAIDs and sulfonylureas'
+        : diplotype.phenotype === 'Normal Metabolizer'
+          ? 'You have NORMAL CYP2C9 activity. Standard dosing is appropriate for CYP2C9 substrates.\nWarfarin dosing still requires INR monitoring (other factors affect response).'
+          : 'Your CYP2C9 status could not be determined. Use conservative dosing for CYP2C9 substrates.'}
   `.trim();
 
+  // Limitations
+  const limitations = [
+    '23andMe genotyping covers only *2 and *3 alleles (most common variants)',
+    'Rare CYP2C9 alleles (*4-*36) are not detected',
+    'Warfarin dosing affected by many factors beyond CYP2C9 (VKORC1, age, weight, vitamin K intake)',
+    'Does not detect gene duplications or deletions'
+  ];
+
+  // Guidelines
+  const guidelines = {
+    cpic: 'CPIC Guideline for CYP2C9 and Warfarin (PMID: 21918512)',
+    fda: [
+      'FDA Drug Label: Warfarin - Pharmacogenetic testing recommended',
+      'FDA Drug Label: Phenytoin - CYP2C9 polymorphisms affect dosing'
+    ]
+  };
+
   return {
+    gene: 'CYP2C9',
     diplotype,
+    drugs,
     clinicalSummary,
-    drugRecommendations,
     warfarinDosing,
     safetyAlerts,
     confidence: diplotype.confidence,
-    normalizedGenotypes: {
-      rs1799853: norm1799853,
-      rs1057910: norm1057910
-    }
+    limitations,
+    guidelines
   };
 }

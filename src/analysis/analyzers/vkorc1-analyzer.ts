@@ -34,7 +34,7 @@
  * - G/G genotype: ~6-7mg/day warfarin
  */
 
-import { normalizeGenotype, type GeneticProvider, type GenotypeNormalizationResult } from './genotype-utils';
+import { extractAndNormalize, type GeneticProvider } from '../utils/genotype-utils';
 
 export interface VKORC1Genotype {
   rs9923231: string; // G>A variant
@@ -62,13 +62,25 @@ export interface CombinedWarfarinRisk {
 }
 
 export interface VKORC1AnalysisResult {
+  gene: 'VKORC1';
   genotype: VKORC1Genotype;
+  drugs: Array<{
+    drug: string;
+    category: string;
+    recommendation: string;
+    doseGuidance: string;
+    monitoring: string;
+  }>;
   clinicalSummary: string;
   warfarinDosing: WarfarinDosingGuidance;
   combinedRisk: CombinedWarfarinRisk | null;
   safetyAlerts: string[];
   confidence: 'high' | 'medium' | 'low';
-  normalizedGenotype: GenotypeNormalizationResult;
+  limitations: string[];
+  guidelines: {
+    cpic: string;
+    fda: string[];
+  };
 }
 
 /**
@@ -92,22 +104,25 @@ function genotypeToPhenotype(rs9923231Genotype: string): {
     };
   }
 
+  // Normalize genotype - remove slashes, uppercase
+  const normalized = rs9923231Genotype.replace(/\//g, '').toUpperCase();
+
   // Map genotype to sensitivity
   // G = low sensitivity (high expression)
   // A = high sensitivity (low expression)
-  if (rs9923231Genotype === 'G/G') {
+  if (normalized === 'GG') {
     return {
       phenotype: 'Low Sensitivity',
       sensitivityScore: 1.0,
       confidence: 'high'
     };
-  } else if (rs9923231Genotype === 'A/G') {
+  } else if (normalized === 'AG' || normalized === 'GA') {
     return {
       phenotype: 'Intermediate Sensitivity',
       sensitivityScore: 2.0,
       confidence: 'high'
     };
-  } else if (rs9923231Genotype === 'A/A') {
+  } else if (normalized === 'AA') {
     return {
       phenotype: 'High Sensitivity',
       sensitivityScore: 3.0,
@@ -120,27 +135,6 @@ function genotypeToPhenotype(rs9923231Genotype: string): {
     phenotype: 'Unknown',
     sensitivityScore: 2.0,
     confidence: 'low'
-  };
-}
-
-/**
- * Determine VKORC1 genotype and sensitivity
- */
-export function determineVKORC1Genotype(
-  rs9923231: string | null,
-  provider: GeneticProvider = 'unknown'
-): VKORC1Genotype {
-  // Normalize genotype
-  const normalized = normalizeGenotype('rs9923231', rs9923231, provider);
-
-  // Map to phenotype
-  const { phenotype, sensitivityScore, confidence } = genotypeToPhenotype(normalized.normalized);
-
-  return {
-    rs9923231: normalized.normalized,
-    phenotype: phenotype as any,
-    sensitivityScore,
-    confidence
   };
 }
 
@@ -197,10 +191,9 @@ function generateWarfarinDosing(
   }
 
   // Combined VKORC1 + CYP2C9 dosing (CLINICAL STANDARD)
-  const { allele1, allele2, phenotype: cyp2c9Phenotype } = cyp2c9Diplotype;
-  
+  const { phenotype: cyp2c9Phenotype } = cyp2c9Diplotype;
+
   // Combined dosing matrix (simplified CPIC approach)
-  const isDiplotype11 = allele1 === '*1' && allele2 === '*1';
   const hasSlowMetabolism = cyp2c9Phenotype === 'Intermediate Metabolizer' || cyp2c9Phenotype === 'Poor Metabolizer';
 
   if (phenotype === 'High Sensitivity') {
@@ -416,18 +409,37 @@ function generateSafetyAlerts(
 }
 
 /**
- * Main VKORC1 analysis function
+ * Determine VKORC1 genotype from array - v2 API
+ */
+function determineVKORC1GenotypeV2(
+  genotypes: Array<{ rsid: string; genotype: string }>
+): VKORC1Genotype {
+  const rs9923231 = extractAndNormalize(genotypes, 'rs9923231');
+  const phenotypeResult = genotypeToPhenotype(rs9923231 || 'Unknown');
+
+  return {
+    rs9923231: rs9923231 || 'Unknown',
+    phenotype: phenotypeResult.phenotype as any,
+    sensitivityScore: phenotypeResult.sensitivityScore,
+    confidence: phenotypeResult.confidence
+  };
+}
+
+/**
+ * Main VKORC1 analysis function - v2 API
+ *
+ * @param genotypes - Array of genotype objects from 23andMe
+ * @param provider - Data provider ('23andme' or 'unknown')
+ * @param cyp2c9Diplotype - Optional CYP2C9 diplotype for combined risk assessment
+ * @returns Comprehensive VKORC1 analysis results
  */
 export function analyzeVKORC1(
-  rs9923231: string | null,
-  provider: GeneticProvider = 'unknown',
+  genotypes: Array<{ rsid: string; genotype: string }>,
+  _provider: GeneticProvider = '23andme',
   cyp2c9Diplotype?: { allele1: string; allele2: string; phenotype: string }
 ): VKORC1AnalysisResult {
-  // Normalize genotype
-  const normalized = normalizeGenotype('rs9923231', rs9923231, provider);
-
   // Determine genotype
-  const genotype = determineVKORC1Genotype(rs9923231, provider);
+  const genotype = determineVKORC1GenotypeV2(genotypes);
 
   // Generate dosing guidance
   const warfarinDosing = generateWarfarinDosing(genotype, cyp2c9Diplotype);
@@ -450,21 +462,21 @@ VKORC1 encodes the DIRECT TARGET of warfarin - the enzyme that recycles vitamin 
 Lower VKORC1 expression = HIGHER warfarin sensitivity = LOWER dose needed.
 
 ${genotype.phenotype === 'High Sensitivity'
-  ? 'You have HIGH WARFARIN SENSITIVITY (A/A genotype). You express LOW levels of VKORC1.\nThis means you need a LOW warfarin dose (typically 2-3mg/day vs standard 5mg/day).\nStarting at standard doses may cause dangerous over-anticoagulation.'
-  : genotype.phenotype === 'Intermediate Sensitivity'
-  ? 'You have INTERMEDIATE WARFARIN SENSITIVITY (A/G genotype). You express MODERATE levels of VKORC1.\nThis means you need a MEDIUM warfarin dose (typically 4-5mg/day).\nStandard starting dose may still be appropriate with close monitoring.'
-  : genotype.phenotype === 'Low Sensitivity'
-  ? 'You have LOW WARFARIN SENSITIVITY (G/G genotype). You express HIGH levels of VKORC1.\nThis means you may need a HIGH warfarin dose (typically 6-7mg/day or more).\nStandard starting doses may be insufficient to achieve therapeutic INR.'
-  : 'Your VKORC1 status could not be determined. Use standard dosing with close monitoring.'}
+      ? 'You have HIGH WARFARIN SENSITIVITY (A/A genotype). You express LOW levels of VKORC1.\nThis means you need a LOW warfarin dose (typically 2-3mg/day vs standard 5mg/day).\nStarting at standard doses may cause dangerous over-anticoagulation.'
+      : genotype.phenotype === 'Intermediate Sensitivity'
+        ? 'You have INTERMEDIATE WARFARIN SENSITIVITY (A/G genotype). You express MODERATE levels of VKORC1.\nThis means you need a MEDIUM warfarin dose (typically 4-5mg/day).\nStandard starting dose may still be appropriate with close monitoring.'
+        : genotype.phenotype === 'Low Sensitivity'
+          ? 'You have LOW WARFARIN SENSITIVITY (G/G genotype). You express HIGH levels of VKORC1.\nThis means you may need a HIGH warfarin dose (typically 6-7mg/day or more).\nStandard starting doses may be insufficient to achieve therapeutic INR.'
+          : 'Your VKORC1 status could not be determined. Use standard dosing with close monitoring.'}
 
 GENOTYPE DETAILS:
-• rs9923231: ${normalized.normalized} (${normalized.confidence} confidence)
+• rs9923231: ${genotype.rs9923231} (${genotype.confidence} confidence)
   - Located in VKORC1 promoter region (-1639G>A)
   - Controls VKORC1 gene expression levels
   - Accounts for 25-30% of warfarin dose variability
 
 ${cyp2c9Diplotype
-  ? `
+      ? `
 COMBINED PHARMACOGENETICS:
 • VKORC1: ${genotype.rs9923231}
 • CYP2C9: ${cyp2c9Diplotype.allele1}/${cyp2c9Diplotype.allele2} (${cyp2c9Diplotype.phenotype})
@@ -474,7 +486,7 @@ COMBINED PHARMACOGENETICS:
 Together, VKORC1 and CYP2C9 explain ~40-50% of warfarin dose variability.
 The remaining variability comes from clinical factors (age, weight, diet, medications).
 `
-  : '\n💡 CYP2C9 testing recommended for comprehensive warfarin risk assessment.\nCombined VKORC1 + CYP2C9 testing explains ~40-50% of warfarin dose variability.'}
+      : '\n💡 CYP2C9 testing recommended for comprehensive warfarin risk assessment.\nCombined VKORC1 + CYP2C9 testing explains ~40-50% of warfarin dose variability.'}
 
 CLINICAL PEARLS:
 • Warfarin is the #2 cause of drug-related hospitalizations in the US
@@ -483,13 +495,49 @@ CLINICAL PEARLS:
 • Vitamin K intake (leafy greens) also affects warfarin response
   `.trim();
 
+  // Drug recommendations (v2 format)
+  const drugs = [{
+    drug: 'Warfarin',
+    category: 'Anticoagulant',
+    recommendation: genotype.phenotype === 'High Sensitivity'
+      ? 'REDUCE starting dose by 50-70%. Start at 2-3mg/day.'
+      : genotype.phenotype === 'Intermediate Sensitivity'
+        ? 'REDUCE starting dose by 20-40%. Start at 3.5-4.5mg/day.'
+        : genotype.phenotype === 'Low Sensitivity'
+          ? 'MAY REQUIRE INCREASED dose. Standard 5mg/day may be insufficient.'
+          : 'Use standard dosing with close monitoring',
+    doseGuidance: warfarinDosing.estimatedDose,
+    monitoring: warfarinDosing.inrMonitoring
+  }];
+
+  // Limitations
+  const limitations = [
+    'VKORC1 accounts for only 25-30% of warfarin dose variability',
+    'Does not account for CYP2C9 metabolism (~10-15% variability)',
+    'Clinical factors also critical: age, weight, vitamin K intake, drug interactions',
+    'Does not detect rare VKORC1 variants',
+    '23andMe covers only rs9923231 (primary variant)'
+  ];
+
+  // Guidelines
+  const guidelines = {
+    cpic: 'CPIC Guideline for VKORC1/CYP2C9 and Warfarin (PMID: 21918512)',
+    fda: [
+      'FDA Drug Label: Warfarin - Pharmacogenetic testing recommended',
+      'FDA Table of Pharmacogenomic Biomarkers - VKORC1'
+    ]
+  };
+
   return {
+    gene: 'VKORC1',
     genotype,
+    drugs,
     clinicalSummary,
     warfarinDosing,
     combinedRisk,
     safetyAlerts,
     confidence: genotype.confidence,
-    normalizedGenotype: normalized
+    limitations,
+    guidelines
   };
 }

@@ -52,13 +52,13 @@ export function analyzeCompleteDNA(genotypes: Record<string, string>): Integrate
   const genotypeArray = genotypeRecordToArray(genotypes);
   const pgxResults = analyzeComprehensivePGx(genotypeArray);
   const nutriResults = analyzeNutrigenomics(genotypes);
-  
+
   // Combine critical findings
   const criticalFindings = combineCriticalFindings(pgxResults, nutriResults);
-  
+
   // Generate comprehensive action plan
   const actionPlan = generateActionPlan(pgxResults, nutriResults, criticalFindings);
-  
+
   // Calculate summary stats
   const summary = {
     totalVariantsAnalyzed: Object.keys(genotypes).length,
@@ -66,7 +66,7 @@ export function analyzeCompleteDNA(genotypes: Record<string, string>): Integrate
     criticalFindingsCount: criticalFindings.filter(f => f.priority === 'critical').length,
     actionableInsights: criticalFindings.length + actionPlan.immediate.length
   };
-  
+
   return {
     pgx: pgxResults,
     nutrigenomics: nutriResults,
@@ -84,7 +84,7 @@ function combineCriticalFindings(
   nutri: NutrigenomicsResult
 ): CombinedCriticalFinding[] {
   const findings: CombinedCriticalFinding[] = [];
-  
+
   // PGx critical findings
   if (pgx.criticalSafety) {
     pgx.criticalSafety.dpyd?.forEach(variant => {
@@ -99,7 +99,7 @@ function combineCriticalFindings(
         });
       }
     });
-    
+
     pgx.criticalSafety.nudt15?.forEach(variant => {
       if (variant.activityScore < 1.0) {
         findings.push({
@@ -112,7 +112,7 @@ function combineCriticalFindings(
         });
       }
     });
-    
+
     pgx.criticalSafety.tpmt?.forEach(variant => {
       if (variant.activityScore < 1.0) {
         findings.push({
@@ -126,7 +126,7 @@ function combineCriticalFindings(
       }
     });
   }
-  
+
   // Nutrigenomics critical findings
   nutri.criticalFindings.forEach(finding => {
     findings.push({
@@ -138,11 +138,11 @@ function combineCriticalFindings(
       variants: finding.variants
     });
   });
-  
+
   // Check for overlapping concerns (e.g., MTHFR + methotrexate)
   const mthfrImpaired = nutri.categories.vitamins.folate.status === 'high_risk';
   const onMethotrexate = false; // Would need to check PGx results for methotrexate mentions
-  
+
   if (mthfrImpaired && onMethotrexate) {
     findings.push({
       source: 'both',
@@ -153,7 +153,7 @@ function combineCriticalFindings(
       variants: ['rs1801133']
     });
   }
-  
+
   // Sort by priority
   return findings.sort((a, b) => {
     const priorityOrder = { critical: 0, high: 1, moderate: 2 };
@@ -172,9 +172,9 @@ function generateActionPlan(
   const immediate: ActionItem[] = [];
   const shortTerm: ActionItem[] = [];
   const longTerm: ActionItem[] = [];
-  
+
   // IMMEDIATE ACTIONS (do today/this week)
-  
+
   // Critical PGx
   criticalFindings
     .filter(f => f.source === 'pgx' && f.priority === 'critical')
@@ -187,7 +187,7 @@ function generateActionPlan(
         source: 'pgx'
       });
     });
-  
+
   // Critical nutrigenomics - immediate testing needed
   if (nutri.categories.minerals.iron.hemochromatosisRisk === 'high') {
     immediate.push({
@@ -198,7 +198,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   if (nutri.categories.vitamins.vitaminB12.status === 'high_risk') {
     immediate.push({
       category: 'Vitamin B12',
@@ -208,7 +208,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   if (nutri.categories.vitamins.folate.status === 'high_risk') {
     immediate.push({
       category: 'Folate & Homocysteine',
@@ -218,7 +218,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   if (nutri.categories.foodIntolerances.alcohol.aldh2Status === 'deficient') {
     immediate.push({
       category: 'Alcohol Safety',
@@ -228,9 +228,9 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // SHORT-TERM ACTIONS (next 1-3 months)
-  
+
   // Start supplement protocol
   const supplements = nutri.supplements.filter(s => s.priority === 'critical' || s.priority === 'high');
   if (supplements.length > 0) {
@@ -242,7 +242,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // Dietary modifications
   const dietChanges = nutri.recommendations.filter(r => r.priority === 'high');
   if (dietChanges.length > 0) {
@@ -254,7 +254,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // Vitamin D testing
   if (nutri.categories.vitamins.vitaminD.status === 'high_risk' || nutri.categories.vitamins.vitaminD.status === 'moderate_risk') {
     shortTerm.push({
@@ -265,7 +265,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // PGx: Medication review
   if (pgx.cyp2d6?.diplotype.phenotype === 'Poor Metabolizer' || pgx.cyp2d6?.diplotype.phenotype === 'Ultrarapid Metabolizer') {
     shortTerm.push({
@@ -276,9 +276,9 @@ function generateActionPlan(
       source: 'pgx'
     });
   }
-  
+
   // LONG-TERM ACTIONS (3-12 months)
-  
+
   // Weight management if FTO risk
   if (nutri.categories.macronutrients.weight.obesityRisk === 'high') {
     longTerm.push({
@@ -289,7 +289,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // Diabetes prevention if TCF7L2 risk
   if (nutri.categories.macronutrients.carbohydrate.diabetesRisk === 'high') {
     longTerm.push({
@@ -300,7 +300,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // Cardiovascular risk management
   if (nutri.categories.foodIntolerances.caffeine.cardiovascularRisk === 'high_with_intake') {
     longTerm.push({
@@ -311,7 +311,7 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   // Bone health if vitamin D receptor issues
   if (nutri.categories.vitamins.vitaminD.status === 'high_risk') {
     longTerm.push({
@@ -322,28 +322,28 @@ function generateActionPlan(
       source: 'nutrigenomics'
     });
   }
-  
+
   return { immediate, shortTerm, longTerm };
 }
 
 /**
  * Count unique genes analyzed across both modules
  */
-function countUniqueGenes(pgx: PGxResult, nutri: NutrigenomicsResult): number {
+function countUniqueGenes(pgx: PGxResult, _nutri: NutrigenomicsResult): number {
   const genes = new Set<string>();
-  
+
   // PGx genes
   if (pgx.cyp2d6) genes.add('CYP2D6');
   if (pgx.cyp2c19) genes.add('CYP2C19');
   if (pgx.cyp2c9) genes.add('CYP2C9');
   if (pgx.cyp2b6) genes.add('CYP2B6');
   if (pgx.cyp3a5) genes.add('CYP3A5');
-  
+
   // Add more PGx genes from critical safety
   if (pgx.criticalSafety?.dpyd) genes.add('DPYD');
   if (pgx.criticalSafety?.nudt15) genes.add('NUDT15');
   if (pgx.criticalSafety?.tpmt) genes.add('TPMT');
-  
+
   // Nutrigenomics genes (estimate based on analysis)
   const nutriGenes = [
     'FUT2', 'MTHFR', 'BCMO1', 'CYP2R1', 'GC', 'VDR',
@@ -353,9 +353,9 @@ function countUniqueGenes(pgx: PGxResult, nutri: NutrigenomicsResult): number {
     'GSTP1', 'NAT2', 'PON1', 'NQO1', 'MTRR', 'MTR',
     'SLCO1B1', 'ABCG2', 'CLOCK', 'MAOA', 'XPC'
   ];
-  
+
   nutriGenes.forEach(g => genes.add(g));
-  
+
   return genes.size;
 }
 
@@ -364,17 +364,17 @@ function countUniqueGenes(pgx: PGxResult, nutri: NutrigenomicsResult): number {
  */
 export function generateExecutiveSummary(analysis: IntegratedDNAAnalysis): string {
   const lines: string[] = [];
-  
+
   lines.push('INTEGRATED DNA ANALYSIS - EXECUTIVE SUMMARY');
   lines.push('='.repeat(60));
   lines.push('');
-  
+
   lines.push(`Total Variants Analyzed: ${analysis.summary.totalVariantsAnalyzed}`);
   lines.push(`Total Genes Analyzed: ${analysis.summary.totalGenesAnalyzed}`);
   lines.push(`Critical Findings: ${analysis.summary.criticalFindingsCount}`);
   lines.push(`Actionable Insights: ${analysis.summary.actionableInsights}`);
   lines.push('');
-  
+
   // Critical findings
   if (analysis.criticalFindings.length > 0) {
     lines.push('CRITICAL FINDINGS:');
@@ -387,7 +387,7 @@ export function generateExecutiveSummary(analysis: IntegratedDNAAnalysis): strin
         lines.push('');
       });
   }
-  
+
   // Immediate actions
   if (analysis.actionPlan.immediate.length > 0) {
     lines.push('IMMEDIATE ACTIONS:');
@@ -398,7 +398,7 @@ export function generateExecutiveSummary(analysis: IntegratedDNAAnalysis): strin
       lines.push('');
     });
   }
-  
+
   // PGx summary
   lines.push('PHARMACOGENOMICS SUMMARY:');
   lines.push('-'.repeat(60));
@@ -412,7 +412,7 @@ export function generateExecutiveSummary(analysis: IntegratedDNAAnalysis): strin
     lines.push(`CYP2C19: ${analysis.pgx.cyp2c19.phenotype}`);
   }
   lines.push('');
-  
+
   // Nutrigenomics summary
   lines.push('NUTRIGENOMICS SUMMARY:');
   lines.push('-'.repeat(60));
@@ -422,7 +422,7 @@ export function generateExecutiveSummary(analysis: IntegratedDNAAnalysis): strin
   lines.push(`Iron: ${analysis.nutrigenomics.categories.minerals.iron.status}`);
   lines.push(`Lactose: ${analysis.nutrigenomics.categories.foodIntolerances.lactose.status}`);
   lines.push('');
-  
+
   return lines.join('\n');
 }
 

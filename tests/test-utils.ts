@@ -217,11 +217,18 @@ export const SLCO1B1_TEST_GENOTYPES = {
 
 /**
  * Standard test genotypes for F5 (Factor V Leiden)
+ * 
+ * rs6025 (R506Q):
+ * - Reference allele: G (normal coagulation)
+ * - Alternate allele: A (Leiden mutation, APC resistance)
+ * - 23andMe reports on forward strand: G>A
+ * 
+ * Clinical Reference: ClinVar VCV000015164
  */
 export const F5_TEST_GENOTYPES = {
-  normal: createTestGenotype('rs6025', 'CC'), // No mutation
-  heterozygous: createTestGenotype('rs6025', 'CT'), // One copy
-  homozygous: createTestGenotype('rs6025', 'TT'), // Two copies
+  normal: createTestGenotype('rs6025', 'GG'), // No mutation - normal Factor V
+  heterozygous: createTestGenotype('rs6025', 'AG'), // One copy - 5-7x VTE risk
+  homozygous: createTestGenotype('rs6025', 'AA'), // Two copies - 50-80x VTE risk
 };
 
 // =============================================================================

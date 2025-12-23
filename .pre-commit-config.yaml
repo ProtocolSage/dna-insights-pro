@@ -1,0 +1,42 @@
+# DNA Insights Pro - Pre-commit Configuration
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # JavaScript/TypeScript hooks
+  - repo: local
+    hooks:
+      - id: typecheck
+        name: TypeScript Type Check
+        entry: npx tsc --noEmit
+        language: system
+        types: [typescript]
+        pass_filenames: false
+        
+      - id: test-related
+        name: Run Related Tests
+        entry: npm test -- --run --passWithNoTests
+        language: system
+        types: [typescript]
+        pass_filenames: false
+        stages: [commit]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: no-commit-to-branch
+        args: ['--branch', 'main']
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        args: ['--fix', '--disable', 'MD013', 'MD033', 'MD041']

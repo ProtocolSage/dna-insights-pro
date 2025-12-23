@@ -2,6 +2,33 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## 🔥 CONTINUING FROM PREVIOUS SESSION?
+
+**READ THESE FIRST:**
+
+1. **`START-HERE.md`** - Quick 2-minute resume
+2. **`CHECKLIST.md`** - Testing infrastructure progress (57/110 tasks complete)
+
+**Last Session (2025-12-23):**
+
+- ✅ Build fixed - `npm run build` succeeds
+- ✅ All 158 tests pass (33 legacy tests deprecated/skipped)
+- ✅ v2 integration tests: 23/23 passing
+- ✅ SLCO1B1 updated to CPIC 2025 guidelines
+- ✅ CI/CD workflow created (GitHub Actions + pre-commit hooks)
+
+**Current Status:** **BUILD WORKING** ✅
+
+- v2 API migration complete for core analyzers
+- Zod schemas implemented for type-safe validation
+- Coverage: Analyzers 92%, Overall 64% (core modules need tests)
+
+**Immediate Priority:** Nutrigenomics test coverage (currently 0%)
+
+---
+
 ## Project Overview
 
 DNA Insights Pro is a comprehensive DNA analysis platform combining pharmacogenomics (PGx) and nutrigenomics analysis for consumer genomic data (23andMe, AncestryDNA). Built with React, TypeScript, and Vite.
@@ -9,6 +36,7 @@ DNA Insights Pro is a comprehensive DNA analysis platform combining pharmacogeno
 ## Common Commands
 
 ### Development
+
 ```bash
 npm install           # Install dependencies
 npm run dev          # Start dev server (port 3000, auto-opens browser)
@@ -18,132 +46,120 @@ npm run lint         # ESLint check
 ```
 
 ### Testing
+
 ```bash
 npm test                # Run tests in watch mode
+npm run test:coverage   # Generate coverage report (95% threshold)
 npm run test:ui         # Run tests with interactive UI
-npm run test:coverage   # Generate coverage report (95% threshold required)
-npm run test:watch      # Explicit watch mode
 ```
 
-**Test Location**: All tests are in `tests/` directory, not alongside source files.
+**Test Location**: All tests are in `tests/` directory.
 
-**Path Aliases**: Tests use `@/` for `./src`, `@analysis/` for `./src/analysis`, and `@tests/` for `./tests`.
+**Key Test Files:**
 
-**Coverage Standards**: Medical-grade 95% coverage required for all metrics (lines, functions, branches, statements). Coverage only measures `src/analysis/**/*.ts` files.
+- `tests/pgx-v2-integration.test.ts` - v2 API integration tests (23/23 passing)
+- `tests/analyzers/*.test.ts` - Individual gene analyzer tests
+- `tests/pgx-integration.test.ts` - DEPRECATED (legacy v1, skipped)
+
+**Path Aliases**: `@/` → `./src`, `@analysis/` → `./src/analysis`
 
 ## Architecture
 
 ### Core Analysis Engines (`src/analysis/core/`)
 
-**pgx-integration.ts** - Pharmacogenomics analysis engine
-- Processes raw genotypes into star alleles, diplotypes, and phenotypes
-- Generates drug recommendations with CPIC guideline references
-- Main entry: `analyzePGx(genotypes)` returns `PGxResult[]`
-- Supports CYP2C9, CYP2D6, VKORC1, SLCO1B1, F5 (Factor V Leiden)
+**comprehensive-pgx-analysis.ts** - ✅ V2 API Orchestrator
+
+- Main entry point for PGx analysis
+- Calls all v2 analyzers (CYP2C9, VKORC1, SLCO1B1, F5, CYP2D6)
+- Returns `ComprehensivePGxResult` with structured gene results
 
 **nutrigenomics-analysis.ts** - Nutrigenomics analysis engine
-- Analyzes vitamin/mineral metabolism, macronutrient processing, food intolerances
-- Categories: vitamins (D, B12, folate, A), minerals (iron, calcium), detox, omega fatty acids
-- Main entry: `analyzeNutrigenomics(genotypes)` returns `NutrigenomicsResult`
-- Includes MTHFR C677T/A1298C analysis for folate metabolism
 
-**integrated-dna-analysis.ts** - Unified analysis orchestrator
-- Combines PGx and nutrigenomics results into single output
-- Handles 23andMe file format parsing
-- Main entry: `analyzeGenomicData(genotypes)` or `analyzeDNAFile(file)`
+- Analyzes vitamin/mineral metabolism, food intolerances
+- Main entry: `analyzeNutrigenomics(genotypes)`
+- ⚠️ 0% test coverage - needs tests
+
+**integrated-dna-analysis.ts** - Unified orchestrator
+
+- Combines PGx and nutrigenomics results
+- ⚠️ 0% test coverage - needs tests
 
 ### Gene-Specific Analyzers (`src/analysis/analyzers/`)
 
-Each analyzer exports a single analysis function and follows the pattern:
-- **cyp2c9-analyzer.ts**: `analyzeCYP2C9(genotypes)` - Warfarin metabolism
-- **vkorc1-analyzer.ts**: `analyzeVKORC1(genotypes)` - Warfarin sensitivity
-- **slco1b1-analyzer.ts**: `analyzeSLCO1B1(genotypes)` - Statin metabolism
-- **f5-analyzer.ts**: `analyzeF5(genotypes)` - Factor V Leiden (thrombophilia)
+All analyzers use v2 API pattern and accept genotype arrays:
 
-Analyzers return structured results with:
-- `gene`, `diplotype`, `phenotype`, `activityScore`
-- `drugs[]` - array of drug recommendations with clinical guidance
-- `guidelines` - CPIC/FDA guideline references
+| Analyzer | Function | Coverage |
+|----------|----------|----------|
+| `cyp2c9-analyzer.ts` | `analyzeCYP2C9(genotypes)` | 98.7% |
+| `vkorc1-analyzer.ts` | `analyzeVKORC1(genotypes)` | 97.9% |
+| `slco1b1-analyzer.ts` | `analyzeSLCO1B1(genotypes)` | 94.5% |
+| `f5-analyzer.ts` | `analyzeF5(rs6025, rs6027)` | 83.5% |
+| `cyp2d6-analyzer.ts` | `analyzeCYP2D6(genotypes)` | 86.8% |
+| `ugt1a1-analyzer.ts` | `analyzeUGT1A1(genotypes)` | 88.4% |
 
-### Knowledge Base (`src/data/`)
+### Schemas (`src/analysis/schemas/`)
 
-- **kb-pgx-ultimate.json** (125KB) - Comprehensive pharmacogenomics knowledge base
-- **kb-nutrigenomics-complete-125.json** (91KB) - Nutrigenomics variant database
+**pgx-schemas.ts** - Zod validation schemas for v2 API
 
-These JSON files contain variant-to-phenotype mappings, drug recommendations, and clinical guidelines.
+- Type-safe validation for all analyzer results
+- Auto-generated TypeScript types
+- Medical disclaimers and PMID references
 
-### UI Components (`src/components/`)
+### CI/CD
 
-- **DNAAnalysisPanel.tsx** - Main dashboard component displaying all analysis results
-- **PGxPanel.tsx** - Pharmacogenomics-specific UI panel
+**.github/workflows/ci.yml** - GitHub Actions workflow
 
-### Test Infrastructure (`tests/`)
+- Build & type check
+- Full test suite with coverage
+- Clinical validation tests
+- Security scanning
 
-**Test Utilities**:
-- `setup.ts` - Custom matchers: `toBeValidGenotype()`, `toBeValidAlleleName()`, `toBeValidPhenotype()`, `toBeValidActivityScore()`
-- `test-utils.ts` - Factories: `createTestGenotype()`, `createTestGenotypes()`, test data sets, assertion helpers
+**.pre-commit-config.yaml** - Pre-commit hooks
 
-**Test Files**:
-- `tests/analyzers/*.test.ts` - Individual gene analyzer tests
-- `tests/pgx-integration.test.ts` - End-to-end integration tests
-- `tests/pgx-integration-test.ts` - Legacy manual console test (not actively used)
-
-**Testing Patterns**:
-1. Use factories from `test-utils.ts` to create genotype data
-2. Follow Arrange-Act-Assert pattern
-3. Test categories: basic functionality, edge cases, drug recommendations, clinical validation
-4. Always reference CPIC guidelines and PMIDs in clinical tests
+- TypeScript checking
+- Test execution
 
 ## Key Implementation Details
 
-### Genotype Format
-Genotypes are objects with `rsid` and `genotype` properties:
+### Genotype Format (v2 API)
+
 ```typescript
 { rsid: 'rs1799853', genotype: 'CT' }
 ```
 
-### Star Allele Nomenclature
-- `*1` = wildtype (normal function)
-- `*2`, `*3`, etc. = variants with specific functional impacts
-- Diplotypes combine two alleles: `*1/*2`, `*2/*3`
-- Activity scores: 0 (no function) to 2+ (normal/increased)
+Genotype normalization handles:
 
-### Phenotype Classifications
-Standard CPIC phenotypes:
-- Ultrarapid Metabolizer (UM)
-- Rapid Metabolizer (RM)
-- Normal Metabolizer (NM)
-- Intermediate Metabolizer (IM)
-- Poor Metabolizer (PM)
+- Slashed format: `G/A` → `AG`
+- Alphabetical sorting: `TC` → `CT`
 
-### Critical Genes
-- **CYP2C9**: Warfarin, NSAIDs metabolism
-- **VKORC1**: Warfarin sensitivity
-- **CYP2D6**: Codeine, tramadol, antidepressants (complex gene duplication/deletion)
-- **SLCO1B1**: Statin myopathy risk
-- **F5**: Factor V Leiden thrombophilia
-- **MTHFR**: Folate metabolism (C677T, A1298C variants)
+### CPIC 2025 Updates Applied
 
-### File Format Support
-Primary format: 23andMe raw data (tab-delimited)
-```
-# rsid  chromosome  position  genotype
-rs1799853  10  96702047  CT
-```
+**SLCO1B1** (PMID: 24918167):
 
-## Development Notes
+- `*1`: Score 1.0 (Normal Function)
+- `*5`: Score 0.0 (No Function) ← Updated from 0.5
+- Thresholds: ≥1.5 Normal, ≥0.5 Decreased, <0.5 Poor
 
-- **TypeScript**: Strict mode enabled, all source must pass `tsc` compilation
-- **Module System**: ES modules (`"type": "module"` in package.json)
-- **Build Output**: `dist/` directory (included in .gitignore)
-- **Dev Server**: Vite dev server with HMR on port 3000
-- **Styling**: TailwindCSS (config in `tailwind.config.js`)
-- **Charts**: Recharts library for data visualization
+### Test Data (tests/test-utils.ts)
+
+Standard test genotypes available:
+
+- `CYP2C9_TEST_GENOTYPES` - wildtype, *2,*3 variants
+- `VKORC1_TEST_GENOTYPES` - GG, AG, AA
+- `SLCO1B1_TEST_GENOTYPES` - *1/*1, *1/*5, *5/*5
+- `F5_TEST_GENOTYPES` - Normal (GG), Het (AG), Hom (AA)
+
+## Clinical References
+
+| Gene | PMID | Guideline |
+|------|------|-----------|
+| CYP2C9/VKORC1 | 21716271 | Warfarin dosing |
+| CYP2D6 | 27997040, 31006110 | Opioid metabolism |
+| SLCO1B1 | 24918167 | Statin myopathy |
+| F5 | ClinVar VCV000015164 | Factor V Leiden |
 
 ## Documentation
 
-Reference documentation in `docs/`:
-- `NUTRIGENOMICS-README.md` - Detailed nutrigenomics module documentation
-- `ROADMAP_PRIORITY_BREAKDOWN.md` - Feature development roadmap
-- `QUICKSTART.md` - Testing infrastructure integration guide
-- `README-TESTING.md` - Comprehensive testing framework documentation
+- `CHECKLIST.md` - Testing infrastructure progress tracker
+- `docs/NUTRIGENOMICS-README.md` - Nutrigenomics module guide
+- `docs/QUICKSTART.md` - Testing integration guide

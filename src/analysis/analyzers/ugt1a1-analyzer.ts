@@ -115,51 +115,6 @@ function normalizeGenotype(genotype: string | null): string | null {
 }
 
 /**
- * Get allele function from rsid and genotype
- */
-function getAlleleFunction(rsid: string, genotype: string): {
-  allele: UGT1A1Allele;
-  activity: number;
-} {
-  const norm = normalizeGenotype(genotype);
-  if (!norm) return { allele: 'Unknown', activity: 1.0 };
-
-  switch (rsid) {
-    case 'rs8175347':
-      // *28 allele (TA repeat - proxy detection)
-      // This is actually a TA repeat, not a simple SNP
-      // 6/6 = *1/*1 (normal)
-      // 6/7 = *1/*28
-      // 7/7 = *28/*28
-      // On SNP arrays, this is often detected as a proxy
-      // For now, we'll use a simplified model
-      return { allele: 'Unknown', activity: 1.0 }; // Cannot reliably detect on SNP arrays
-
-    case 'rs4148323':
-      // *6 allele (G>A, East Asian)
-      // GG = *1/*1
-      // GA = *1/*6
-      // AA = *6/*6
-      if (norm === 'GG') return { allele: '*1', activity: 1.0 };
-      if (norm === 'AG') return { allele: '*6', activity: 0.3 };
-      if (norm === 'AA') return { allele: '*6', activity: 0.3 };
-      break;
-
-    case 'rs887829':
-      // *27 allele (C>T, African)
-      // CC = *1/*1
-      // CT = *1/*27
-      // TT = *27/*27
-      if (norm === 'CC') return { allele: '*1', activity: 1.0 };
-      if (norm === 'CT') return { allele: '*27', activity: 0.5 };
-      if (norm === 'TT') return { allele: '*27', activity: 0.5 };
-      break;
-  }
-
-  return { allele: 'Unknown', activity: 1.0 };
-}
-
-/**
  * Determine diplotype from genotypes
  */
 function determineDiplotype(
@@ -169,7 +124,7 @@ function determineDiplotype(
   // Extract relevant SNPs
   const rs4148323 = genotypes.find(g => g.rsid === 'rs4148323')?.genotype || null;
   const rs887829 = genotypes.find(g => g.rsid === 'rs887829')?.genotype || null;
-  const rs8175347 = genotypes.find(g => g.rsid === 'rs8175347')?.genotype || null;
+  // Note: rs8175347 is the TA repeat - not reliably detected on SNP arrays
 
   // Determine alleles
   let allele1: UGT1A1Allele = '*1';
@@ -283,7 +238,7 @@ function generateDrugRecommendations(
  */
 function generateIrinotecanRecommendations(
   phenotype: UGT1A1Phenotype,
-  activityScore: number
+  _activityScore: number
 ): UGT1A1DrugRecommendation[] {
 
   if (phenotype === 'Poor Metabolizer') {
@@ -325,7 +280,7 @@ function generateIrinotecanRecommendations(
  */
 function generateCabotegravirRecommendations(
   phenotype: UGT1A1Phenotype,
-  activityScore: number
+  _activityScore: number
 ): UGT1A1DrugRecommendation[] {
 
   if (phenotype === 'Poor Metabolizer') {
@@ -378,7 +333,7 @@ function determineGilbertSyndrome(diplotype: UGT1A1Diplotype): {
 
   // Heterozygous = carrier
   if (allele1 !== allele2 && (allele1 === '*6' || allele1 === '*27' || allele1 === '*28' ||
-                                allele2 === '*6' || allele2 === '*27' || allele2 === '*28')) {
+    allele2 === '*6' || allele2 === '*27' || allele2 === '*28')) {
     return {
       status: 'Carrier',
       clinicalSignificance: 'Carrier for Gilbert syndrome variant. May have slightly elevated bilirubin during fasting, but typically no clinical symptoms.'
@@ -417,7 +372,7 @@ function generateSafetyAlerts(diplotype: UGT1A1Diplotype): string[] {
  */
 function determineConfidence(
   diplotype: UGT1A1Diplotype,
-  provider: GeneticProvider,
+  _provider: GeneticProvider,
   genotypes: Array<{ rsid: string; genotype: string }>
 ): ConfidenceLevel {
 
@@ -465,7 +420,8 @@ function getLimitations(provider: GeneticProvider): string[] {
  */
 export function analyzeUGT1A1(
   genotypes: Array<{ rsid: string; genotype: string }>,
-  provider: GeneticProvider = 'unknown'
+
+  _provider: GeneticProvider = '23andme'
 ): UGT1A1AnalysisResult {
 
   // Determine diplotype
@@ -481,10 +437,10 @@ export function analyzeUGT1A1(
   const safetyAlerts = generateSafetyAlerts(diplotype);
 
   // Determine confidence
-  const confidence = determineConfidence(diplotype, provider, genotypes);
+  const confidence = determineConfidence(diplotype, _provider, genotypes);
 
   // Get limitations
-  const limitations = getLimitations(provider);
+  const limitations = getLimitations(_provider);
 
   // Generate clinical summary
   const clinicalSummary = generateClinicalSummary(diplotype, gilbertSyndrome);

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(npm install:*)",
+      "Bash(wc:*)",
+      "mcp__plugin_pubmed_PubMed__search_articles",
+      "Bash(grep:*)",
+      "Bash(node:*)",
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh --version:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh repo create:*)",
+      "WebSearch",
+      "Bash(for file in src/analysis/analyzers/*.ts src/analysis/core/*.ts)",
+      "Bash(do sed -i 's/provider: GeneticProvider = .*$/\\\\n  _provider: GeneticProvider = ''''23andme''''/g' \"$file\")",
+      "Bash(done)"
+    ]
+  }
+}

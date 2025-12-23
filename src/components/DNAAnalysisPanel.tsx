@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { analyzeCompleteDNA, IntegratedDNAAnalysis, generateExecutiveSummary } from './integrated-dna-analysis';
+import { analyzeCompleteDNA, IntegratedDNAAnalysis, generateExecutiveSummary } from '../analysis/core/integrated-dna-analysis';
 
 interface DNAAnalysisPanelProps {
   genotypes: Record<string, string>;
@@ -164,10 +164,10 @@ function OverviewTab({ analysis }: { analysis: IntegratedDNAAnalysis }) {
           <div className="insight-card">
             <h4>💊 Pharmacogenomics</h4>
             {analysis.pgx.cyp2d6 && (
-              <p><strong>CYP2D6:</strong> {analysis.pgx.cyp2d6.phenotype}</p>
+              <p><strong>CYP2D6:</strong> {analysis.pgx.cyp2d6.diplotype.phenotype}</p>
             )}
             {analysis.pgx.cyp2c19 && (
-              <p><strong>CYP2C19:</strong> {analysis.pgx.cyp2c19.phenotype}</p>
+              <p><strong>CYP2C19:</strong> {analysis.pgx.cyp2c19.diplotype?.phenotype || 'Unknown'}</p>
             )}
             {analysis.pgx.criticalSafety && (
               <p className="safety-note">

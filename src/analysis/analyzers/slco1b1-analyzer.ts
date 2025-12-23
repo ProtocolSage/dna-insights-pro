@@ -36,7 +36,7 @@
  * additional variants (rs2306283) not commonly tested.
  */
 
-import { normalizeGenotype, type GeneticProvider, type GenotypeNormalizationResult } from './genotype-utils';
+import { extractAndNormalize, type GeneticProvider } from '../utils/genotype-utils';
 
 export interface SLCO1B1Diplotype {
   allele1: string;
@@ -57,24 +57,39 @@ export interface StatinRecommendation {
 }
 
 export interface SLCO1B1AnalysisResult {
+  gene: 'SLCO1B1';
   diplotype: SLCO1B1Diplotype;
+  drugs: StatinRecommendation[]; // v2 standard: "drugs" not "statinRecommendations"
   clinicalSummary: string;
-  statinRecommendations: StatinRecommendation[];
   safetyAlerts: string[];
   confidence: 'high' | 'medium' | 'low';
-  normalizedGenotype: GenotypeNormalizationResult;
+  limitations: string[];
+  guidelines: {
+    cpic: string;
+    fda: string[];
+  };
 }
 
 /**
  * SLCO1B1 star allele function scores
- * Based on CPIC guidelines
+ * Based on CPIC guidelines (Updated October 2025)
  * 
- * ONLY CLINICALLY VALIDATED ALLELES INCLUDED
+ * CPIC ALLELE ASSIGNMENTS:
+ * - *1: Normal Function (Score: 1.0)
+ * - *5 (rs4149056 C): No Function (Score: 0.0) 
+ * - *15: No Function (Score: 0.0) - includes *5
+ * 
+ * PHENOTYPE MAPPING:
+ * - Score >= 1.5: Normal Function (*1/*1 = 2.0)
+ * - Score 0.5-1.0: Decreased Function (*1/*5 = 1.0)
+ * - Score < 0.5: Poor Function (*5/*5 = 0.0)
+ * 
+ * Clinical Reference: PMID: 24918167
  */
 const ALLELE_FUNCTION: Record<string, number> = {
   '*1': 1.0,  // Normal function
-  '*5': 0.5,  // Decreased function (~50% activity)
-  '*15': 0.3  // Poor function (includes *5 + rs2306283)
+  '*5': 0.0,  // No function (rs4149056 C allele)
+  '*15': 0.0  // No function (includes *5 + rs2306283)
 };
 
 /**
@@ -97,13 +112,16 @@ function genotypeToDiplotype(rs4149056Genotype: string): {
     return { allele1: 'Unknown', allele2: 'Unknown', confidence: 'low' };
   }
 
+  // Normalize genotype - remove slashes, uppercase
+  const normalized = rs4149056Genotype.replace(/\//g, '').toUpperCase();
+
   // Map genotype to alleles
   // T = *1 (normal), C = *5 (decreased)
-  if (rs4149056Genotype === 'T/T') {
+  if (normalized === 'TT') {
     return { allele1: '*1', allele2: '*1', confidence: 'high' };
-  } else if (rs4149056Genotype === 'C/T') {
+  } else if (normalized === 'CT' || normalized === 'TC') {
     return { allele1: '*1', allele2: '*5', confidence: 'high' };
-  } else if (rs4149056Genotype === 'C/C') {
+  } else if (normalized === 'CC') {
     return { allele1: '*5', allele2: '*5', confidence: 'high' };
   }
 
@@ -130,42 +148,20 @@ function diplotypeToPhenotype(allele1: string, allele2: string): {
 
   const totalFunction = function1 + function2;
 
-  // CPIC phenotype mapping
+  // CPIC phenotype mapping (PMID: 24918167, Updated October 2025)
+  // *1/*1 = 2.0 → Normal Function
+  // *1/*5 = 1.0 → Decreased Function
+  // *5/*5 = 0.0 → Poor Function
   let phenotype: string;
   if (totalFunction >= 1.5) {
     phenotype = 'Normal Function';
-  } else if (totalFunction >= 1.0) {
-    phenotype = 'Decreased Function';
+  } else if (totalFunction >= 0.5) {
+    phenotype = 'Decreased Function'; // Catches *1/*5 (score 1.0)
   } else {
-    phenotype = 'Poor Function';
+    phenotype = 'Poor Function'; // *5/*5 (score 0.0)
   }
 
   return { phenotype, functionScore: totalFunction };
-}
-
-/**
- * Determine SLCO1B1 diplotype
- */
-export function determineSLCO1B1Diplotype(
-  rs4149056: string | null,
-  provider: GeneticProvider = 'unknown'
-): SLCO1B1Diplotype {
-  // Normalize genotype
-  const normalized = normalizeGenotype('rs4149056', rs4149056, provider);
-
-  // Map to diplotype
-  const { allele1, allele2, confidence } = genotypeToDiplotype(normalized.normalized);
-
-  // Get phenotype
-  const { phenotype, functionScore } = diplotypeToPhenotype(allele1, allele2);
-
-  return {
-    allele1,
-    allele2,
-    phenotype: phenotype as any,
-    functionScore,
-    confidence
-  };
 }
 
 /**
@@ -177,7 +173,7 @@ export function determineSLCO1B1Diplotype(
  * LOWEST: Pravastatin, Rosuvastatin, Pitavastatin
  */
 function generateStatinRecommendations(diplotype: SLCO1B1Diplotype): StatinRecommendation[] {
-  const { phenotype, functionScore, allele1, allele2 } = diplotype;
+  const { phenotype, functionScore: _functionScore, allele1: _allele1, allele2: _allele2 } = diplotype;
   const recommendations: StatinRecommendation[] = [];
 
   // Simvastatin (HIGHEST RISK - CPIC actionable)
@@ -323,17 +319,38 @@ function generateSafetyAlerts(diplotype: SLCO1B1Diplotype): string[] {
 }
 
 /**
- * Main SLCO1B1 analysis function
+ * Determine SLCO1B1 diplotype from genotypes array - v2 API
+ */
+function determineSLCO1B1DiplotypeV2(
+  genotypes: Array<{ rsid: string; genotype: string }>
+): SLCO1B1Diplotype {
+  const rs4149056 = extractAndNormalize(genotypes, 'rs4149056');
+  const alleles = genotypeToDiplotype(rs4149056 || 'Unknown');
+  const phenotypeResult = diplotypeToPhenotype(alleles.allele1, alleles.allele2);
+
+  return {
+    allele1: alleles.allele1,
+    allele2: alleles.allele2,
+    phenotype: phenotypeResult.phenotype as any,
+    functionScore: phenotypeResult.functionScore,
+    confidence: alleles.confidence
+  };
+}
+
+/**
+ * Main SLCO1B1 analysis function - v2 API
+ *
+ * @param genotypes - Array of genotype objects from 23andMe
+ * @param provider - Data provider ('23andme' or 'unknown')
+ * @returns Comprehensive SLCO1B1 analysis results
  */
 export function analyzeSLCO1B1(
-  rs4149056: string | null,
-  provider: GeneticProvider = 'unknown'
-): SLCO1B1AnalysisResult {
-  // Normalize genotype
-  const normalized = normalizeGenotype('rs4149056', rs4149056, provider);
+  genotypes: Array<{ rsid: string; genotype: string }>,
 
+  _provider: GeneticProvider = '23andme'
+): SLCO1B1AnalysisResult {
   // Determine diplotype
-  const diplotype = determineSLCO1B1Diplotype(rs4149056, provider);
+  const diplotype = determineSLCO1B1DiplotypeV2(genotypes);
 
   // Generate recommendations
   const statinRecommendations = generateStatinRecommendations(diplotype);
@@ -351,12 +368,12 @@ SLCO1B1 encodes OATP1B1, the primary hepatic uptake transporter for statins.
 Reduced function leads to HIGHER statin blood levels and INCREASED myopathy risk.
 
 ${diplotype.phenotype === 'Poor Function'
-  ? 'You have VERY LOW OATP1B1 function (~25-30% of normal). This causes:\n- 16-17x INCREASED MYOPATHY RISK with simvastatin\n- 2-3x increased risk with atorvastatin\n- CPIC recommends AVOIDING simvastatin or using MAX 20mg/day\n- Pravastatin, rosuvastatin, pitavastatin are PREFERRED (no SLCO1B1 effect)'
-  : diplotype.phenotype === 'Decreased Function'
-  ? 'You have REDUCED OATP1B1 function (~50-75% of normal). This causes:\n- 4-5x INCREASED MYOPATHY RISK with simvastatin\n- 1.5-2x increased risk with atorvastatin\n- CPIC recommends LIMITING simvastatin to MAX 40mg/day\n- Consider pravastatin, rosuvastatin, or pitavastatin'
-  : diplotype.phenotype === 'Normal Function'
-  ? 'You have NORMAL OATP1B1 function. Standard statin dosing is appropriate.\nNo SLCO1B1-related increase in myopathy risk.'
-  : 'Your SLCO1B1 status could not be determined. Use conservative statin dosing.'}
+      ? 'You have VERY LOW OATP1B1 function (~25-30% of normal). This causes:\n- 16-17x INCREASED MYOPATHY RISK with simvastatin\n- 2-3x increased risk with atorvastatin\n- CPIC recommends AVOIDING simvastatin or using MAX 20mg/day\n- Pravastatin, rosuvastatin, pitavastatin are PREFERRED (no SLCO1B1 effect)'
+      : diplotype.phenotype === 'Decreased Function'
+        ? 'You have REDUCED OATP1B1 function (~50-75% of normal). This causes:\n- 4-5x INCREASED MYOPATHY RISK with simvastatin\n- 1.5-2x increased risk with atorvastatin\n- CPIC recommends LIMITING simvastatin to MAX 40mg/day\n- Consider pravastatin, rosuvastatin, or pitavastatin'
+        : diplotype.phenotype === 'Normal Function'
+          ? 'You have NORMAL OATP1B1 function. Standard statin dosing is appropriate.\nNo SLCO1B1-related increase in myopathy risk.'
+          : 'Your SLCO1B1 status could not be determined. Use conservative statin dosing.'}
 
 STATIN MYOPATHY RISK SPECTRUM:
 HIGHEST RISK: Simvastatin 80mg (AVOID in poor/decreased function)
@@ -365,8 +382,8 @@ MODERATE RISK: Atorvastatin ≤40mg, Lovastatin
 LOW RISK: Pravastatin, Rosuvastatin, Pitavastatin (NOT affected by SLCO1B1)
 
 GENOTYPE DETAILS:
-• rs4149056 (SLCO1B1*5): ${normalized.normalized} (${normalized.confidence} confidence)
-  
+• rs4149056 (SLCO1B1*5): ${diplotype.allele1}/${diplotype.allele2} (${diplotype.confidence} confidence)
+
 CLINICAL PEARLS:
 • Simvastatin 80mg has FDA boxed warning for myopathy risk
 • Myopathy symptoms: Muscle pain, weakness, dark urine, CK elevation >10x ULN
@@ -374,12 +391,32 @@ CLINICAL PEARLS:
 • Pharmacogenetic testing recommended before high-dose simvastatin
   `.trim();
 
+  // Limitations
+  const limitations = [
+    '23andMe covers only rs4149056 (*5 allele), not rs2306283 required for *15',
+    'Does not detect rare SLCO1B1 variants',
+    'Myopathy risk affected by other factors: age, medications (fibrates, cyclosporine), renal function',
+    'Does not account for drug-drug interactions',
+    'Only applies to statins metabolized by SLCO1B1 (not all statins)'
+  ];
+
+  // Guidelines
+  const guidelines = {
+    cpic: 'CPIC Guideline for SLCO1B1 and Simvastatin (PMID: 24918167)',
+    fda: [
+      'FDA Drug Label: Simvastatin - Increased myopathy risk with SLCO1B1*5',
+      'FDA Boxed Warning: Simvastatin 80mg - Increased myopathy/rhabdomyolysis risk'
+    ]
+  };
+
   return {
+    gene: 'SLCO1B1',
     diplotype,
+    drugs: statinRecommendations,
     clinicalSummary,
-    statinRecommendations,
     safetyAlerts,
     confidence: diplotype.confidence,
-    normalizedGenotype: normalized
+    limitations,
+    guidelines
   };
 }

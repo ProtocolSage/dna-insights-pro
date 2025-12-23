@@ -8,8 +8,8 @@
  * This adapter transforms inputs AND outputs to match test expectations.
  */
 
-import { analyzeCYP2C9 as analyzeCYP2C9Original } from '../../src/analysis/analyzers/cyp2c9-analyzer';
-import type { GeneticProvider, CYP2C9AnalysisResult } from '../../src/analysis/analyzers/cyp2c9-analyzer';
+import { analyzeCYP2C9 as analyzeCYP2C9Original, type CYP2C9AnalysisResult, type CYP2C9DrugRecommendation } from '../../src/analysis/analyzers/cyp2c9-analyzer';
+import type { GeneticProvider } from '../../src/analysis/utils/genotype-utils';
 
 /**
  * Test genotype format (what tests provide)
@@ -64,6 +64,8 @@ interface TestDrugRecommendation {
  * Adapter function that converts test array format to analyzer parameters
  * and transforms the result to match test expectations
  * 
+ * Updated for v2 API - passes genotypes array directly
+ * 
  * @param genotypes - Array of test genotypes
  * @param provider - Optional provider for genotype normalization
  * @returns Flattened CYP2C9 analysis result for testing
@@ -72,12 +74,18 @@ export function analyzeCYP2C9(
   genotypes: TestGenotype[],
   provider: GeneticProvider = 'unknown'
 ): TestAnalysisResult {
-  // Extract the two SNPs needed for CYP2C9 analysis
+  // Extract the two SNPs needed for data validation
   const rs1799853 = genotypes.find(g => g.rsid === 'rs1799853')?.genotype || null;
   const rs1057910 = genotypes.find(g => g.rsid === 'rs1057910')?.genotype || null;
 
-  // Call the real analyzer with individual parameters
-  const result = analyzeCYP2C9Original(rs1799853, rs1057910, provider);
+  // Convert TestGenotype to v2 API format (just rsid and genotype)
+  const v2Genotypes = genotypes.map(g => ({
+    rsid: g.rsid,
+    genotype: g.genotype
+  }));
+
+  // Call the real analyzer with v2 API (array of genotypes)
+  const result = analyzeCYP2C9Original(v2Genotypes, provider);
 
   // Transform to test-expected format
   return transformToTestFormat(result, rs1799853, rs1057910);
@@ -133,7 +141,7 @@ function transformToTestFormat(
   rs1799853: string | null,
   rs1057910: string | null
 ): TestAnalysisResult {
-  const { diplotype, drugRecommendations, clinicalSummary, warfarinDosing, safetyAlerts, confidence } = result;
+  const { diplotype, drugs: drugRecs, clinicalSummary, warfarinDosing, safetyAlerts, confidence } = result;
 
   // Build diplotype string from alleles
   const diplotypeString = `${diplotype.allele1}/${diplotype.allele2}`;
@@ -144,7 +152,7 @@ function transformToTestFormat(
   const needsWarning = hasMissingData || hasInvalidData;
 
   // Transform drug recommendations to test format
-  const drugs: TestDrugRecommendation[] = drugRecommendations.map(rec => ({
+  const drugs: TestDrugRecommendation[] = drugRecs.map((rec: CYP2C9DrugRecommendation) => ({
     drug: normalizeDrugName(rec.drug),
     category: rec.category,
     recommendation: rec.recommendation,

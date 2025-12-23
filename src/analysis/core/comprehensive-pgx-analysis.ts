@@ -17,6 +17,7 @@ import { analyzeSLCO1B1, type SLCO1B1AnalysisResult } from '../analyzers/slco1b1
 import { analyzeF5, type F5AnalysisResult } from '../analyzers/f5-analyzer';
 import { analyzeCYP2D6, type CYP2D6AnalysisResult } from '../analyzers/cyp2d6-analyzer';
 import { analyzeUGT1A1, type UGT1A1AnalysisResult } from '../analyzers/ugt1a1-analyzer';
+import { analyzeCYP3A5, type CYP3A5AnalysisResult } from '../analyzers/cyp3a5-analyzer';
 
 export interface ComprehensivePGxResult {
   // Core CYP enzymes
@@ -24,7 +25,7 @@ export interface ComprehensivePGxResult {
   cyp2c9?: CYP2C9AnalysisResult;
   cyp2c19?: any; // TODO: Add CYP2C19 analyzer
   cyp3a4?: any;  // TODO: Add CYP3A4 analyzer
-  cyp3a5?: any;  // TODO: Add CYP3A5 analyzer
+  cyp3a5?: CYP3A5AnalysisResult;
   cyp2b6?: any;  // TODO: Add CYP2B6 analyzer
   cyp1a2?: any;  // TODO: Add CYP1A2 analyzer
 
@@ -57,7 +58,7 @@ export interface ComprehensivePGxResult {
  */
 export function analyzeComprehensivePGx(
   genotypes: Array<{ rsid: string; genotype: string }>,
-  provider: 'unknown' | '23andme' | 'ancestrydna' = 'unknown'
+  provider: '23andme' | 'unknown' = '23andme'
 ): ComprehensivePGxResult {
 
   const genesAnalyzed: string[] = [];
@@ -97,7 +98,7 @@ export function analyzeComprehensivePGx(
   try {
     cyp2c9Result = analyzeCYP2C9(genotypes, provider);
     genesAnalyzed.push('CYP2C9');
-    totalDrugsAffected += cyp2c9Result.drugRecommendations.length;
+    totalDrugsAffected += cyp2c9Result.drugs.length;
 
     if (cyp2c9Result.confidence === 'high') {
       highConfidenceResults++;
@@ -118,9 +119,8 @@ export function analyzeComprehensivePGx(
   let vkorc1Result: VKORC1AnalysisResult | undefined;
 
   try {
-    const rs9923231 = genotypes.find(g => g.rsid === 'rs9923231')?.genotype || null;
     vkorc1Result = analyzeVKORC1(
-      rs9923231,
+      genotypes,
       provider,
       cyp2c9Result ? {
         allele1: cyp2c9Result.diplotype.allele1,
@@ -149,17 +149,16 @@ export function analyzeComprehensivePGx(
   let slco1b1Result: SLCO1B1AnalysisResult | undefined;
 
   try {
-    const rs4149056 = genotypes.find(g => g.rsid === 'rs4149056')?.genotype || null;
-    slco1b1Result = analyzeSLCO1B1(rs4149056, provider);
+    slco1b1Result = analyzeSLCO1B1(genotypes, provider);
     genesAnalyzed.push('SLCO1B1');
-    totalDrugsAffected += slco1b1Result.drugRecommendations.length;
+    totalDrugsAffected += slco1b1Result.drugs.length;
 
     if (slco1b1Result.confidence === 'high') {
       highConfidenceResults++;
     }
 
     // Extract critical warnings - check simvastatin risk
-    const simvastatinRec = slco1b1Result.drugRecommendations.find((d: any) =>
+    const simvastatinRec = slco1b1Result.drugs.find((d: any) =>
       d.drug.toLowerCase().includes('simvastatin')
     );
     if (simvastatinRec && (simvastatinRec as any).riskLevel === 'critical') {
@@ -218,6 +217,27 @@ export function analyzeComprehensivePGx(
   }
 
   // ============================================================================
+  // CYP3A5 - Alprazolam, Sildenafil, Zolpidem, Tacrolimus
+  // ============================================================================
+
+  let cyp3a5Result: CYP3A5AnalysisResult | undefined;
+
+  try {
+    cyp3a5Result = analyzeCYP3A5(genotypes, provider);
+    genesAnalyzed.push('CYP3A5');
+    totalDrugsAffected += cyp3a5Result.drugs.length;
+
+    if (cyp3a5Result.confidence === 'high') {
+      highConfidenceResults++;
+    }
+
+    // CYP3A5 has informational warnings, not safety alerts
+    // Most important is tacrolimus dosing for transplant patients
+  } catch (error) {
+    console.error('CYP3A5 analysis failed:', error);
+  }
+
+  // ============================================================================
   // SUMMARY
   // ============================================================================
 
@@ -235,6 +255,7 @@ export function analyzeComprehensivePGx(
     slco1b1: slco1b1Result,
     f5: f5Result,
     ugt1a1: ugt1a1Result,
+    cyp3a5: cyp3a5Result,
     summary
   };
 }
