@@ -158,10 +158,11 @@ export function analyzeComprehensivePGx(
     }
 
     // Extract critical warnings - check simvastatin risk
+    // SLCO1B1 uses 'statin' property, not 'drug'
     const simvastatinRec = slco1b1Result.drugs.find((d: any) =>
-      d.drug.toLowerCase().includes('simvastatin')
+      d?.statin?.toLowerCase().includes('simvastatin')
     );
-    if (simvastatinRec && (simvastatinRec as any).riskLevel === 'critical') {
+    if (simvastatinRec && simvastatinRec.myopathyRisk === 'Very High') {
       criticalWarnings.push(`SLCO1B1: High statin myopathy risk`);
     }
   } catch (error) {
