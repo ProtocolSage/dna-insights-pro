@@ -1,0 +1,1401 @@
+{
+  "kb_version": "2.0.0",
+  "reference_build": "GRCh37",
+  "variants": [
+    {
+      "rsid": "rs429358",
+      "chr": "19",
+      "pos": 44908684,
+      "ref": "T",
+      "alt": "C",
+      "category": ["Health", "Cardiovascular", "Neurological"],
+      "gene": "APOE",
+      "trait": "Cardiovascular & Alzheimer's Risk (APOE ε4)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 2.5,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "60-80",
+          "risk": 0.15
+        }
+      },
+      "interpretation": {
+        "plain_language": "This APOE ε4 variant is associated with increased LDL cholesterol, cardiovascular disease, and late-onset Alzheimer's disease risk. Each copy of the risk allele increases risk approximately 2-3 fold.",
+        "limitations": ["Risk varies by ancestry", "Environmental factors strongly modify risk", "Protective factors like exercise can mitigate genetic risk"]
+      },
+      "evidence": [
+        {"pmid": "23391586", "study_type": "Meta-analysis", "n": 82414, "replicated": true},
+        {"pmid": "24259556", "study_type": "GWAS", "n": 54162, "replicated": true},
+        {"pmid": "19734902", "study_type": "Prospective cohort", "n": 21080, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs7412",
+      "chr": "19",
+      "pos": 44908822,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Cardiovascular"],
+      "gene": "APOE",
+      "trait": "Lipid Metabolism (APOE ε2)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 0.6
+      },
+      "interpretation": {
+        "plain_language": "The APOE ε2 variant is associated with lower LDL cholesterol and reduced cardiovascular risk. However, homozygotes may have increased risk of type III hyperlipoproteinemia.",
+        "limitations": ["Rare type III hyperlipoproteinemia risk in homozygotes", "Effect size varies by diet"]
+      },
+      "evidence": [
+        {"pmid": "17443116", "study_type": "Meta-analysis", "n": 45000, "replicated": true},
+        {"pmid": "22629316", "study_type": "GWAS", "n": 100184, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1801133",
+      "chr": "1",
+      "pos": 11796321,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Cardiovascular", "Nutrigenomics"],
+      "gene": "MTHFR",
+      "trait": "Homocysteine Metabolism (C677T)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.4,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "40-70",
+          "risk": 0.10
+        }
+      },
+      "interpretation": {
+        "plain_language": "The MTHFR C677T variant reduces enzyme activity by 30-70%, affecting folate metabolism and potentially elevating homocysteine levels. Elevated homocysteine is associated with cardiovascular disease risk.",
+        "limitations": ["Risk modifiable by adequate folate intake", "Clinical significance debated for heterozygotes"]
+      },
+      "evidence": [
+        {"pmid": "18779510", "study_type": "Meta-analysis", "n": 16849, "replicated": true},
+        {"pmid": "26916229", "study_type": "Systematic review", "n": 25000, "replicated": true},
+        {"pmid": "12952864", "study_type": "Meta-analysis", "n": 40000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs6025",
+      "chr": "1",
+      "pos": 169519049,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Cardiovascular", "Thrombophilia"],
+      "gene": "F5",
+      "trait": "Factor V Leiden Thrombophilia",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Normal", "rr": 1.0},
+          "GA": {"label": "Heterozygous carrier", "rr": 5.0, "note": "3-8 fold increased VTE risk"},
+          "AA": {"label": "Homozygous", "rr": 50.0, "note": "50-80 fold increased VTE risk"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "Factor V Leiden is the most common inherited thrombophilia. Carriers have increased risk of venous thromboembolism (DVT, pulmonary embolism), especially with additional risk factors like surgery, immobility, or hormonal contraceptives.",
+        "limitations": ["Absolute risk remains relatively low for most carriers", "Risk increases significantly with combined factors"]
+      },
+      "evidence": [
+        {"pmid": "7989264", "study_type": "Original discovery", "n": 503, "replicated": true},
+        {"pmid": "26091587", "study_type": "Meta-analysis", "n": 66155, "replicated": true},
+        {"pmid": "10477777", "study_type": "Systematic review", "n": 8000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1799963",
+      "chr": "11",
+      "pos": 46761055,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Cardiovascular", "Thrombophilia"],
+      "gene": "F2",
+      "trait": "Prothrombin G20210A Thrombophilia",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 3.5
+      },
+      "interpretation": {
+        "plain_language": "The prothrombin G20210A variant is the second most common inherited thrombophilia. It increases prothrombin levels and venous thrombosis risk 2-4 fold.",
+        "limitations": ["Lower penetrance than Factor V Leiden", "Risk compounded by other thrombophilia variants"]
+      },
+      "evidence": [
+        {"pmid": "9354442", "study_type": "Original discovery", "n": 800, "replicated": true},
+        {"pmid": "17476306", "study_type": "Meta-analysis", "n": 35000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs10757274",
+      "chr": "9",
+      "pos": 22096055,
+      "ref": "A",
+      "alt": "G",
+      "category": ["Health", "Cardiovascular"],
+      "gene": "CDKN2A/CDKN2B",
+      "trait": "Coronary Artery Disease Risk (9p21)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "G",
+        "per_allele_or": 1.29,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "40-80",
+          "risk": 0.08
+        }
+      },
+      "interpretation": {
+        "plain_language": "This 9p21 variant near CDKN2A/B is one of the strongest common genetic risk factors for coronary artery disease, independent of traditional risk factors like cholesterol.",
+        "limitations": ["Mechanism not fully understood", "Cannot be modified by traditional risk factor management alone"]
+      },
+      "evidence": [
+        {"pmid": "17478679", "study_type": "GWAS", "n": 23000, "replicated": true},
+        {"pmid": "17478681", "study_type": "GWAS", "n": 17684, "replicated": true},
+        {"pmid": "19247474", "study_type": "Meta-analysis", "n": 170000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs10455872",
+      "chr": "6",
+      "pos": 161010118,
+      "ref": "A",
+      "alt": "G",
+      "category": ["Health", "Cardiovascular"],
+      "gene": "LPA",
+      "trait": "Elevated Lipoprotein(a)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "G",
+        "per_allele_or": 2.0
+      },
+      "interpretation": {
+        "plain_language": "This LPA variant is associated with elevated Lp(a) levels, an independent cardiovascular risk factor. Lp(a) levels are largely genetically determined and not modified by lifestyle.",
+        "limitations": ["Lp(a) testing recommended to confirm levels", "Limited therapeutic options currently available"]
+      },
+      "evidence": [
+        {"pmid": "19198612", "study_type": "GWAS", "n": 3145, "replicated": true},
+        {"pmid": "22607134", "study_type": "Mendelian randomization", "n": 120000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs4149056",
+      "chr": "12",
+      "pos": 21176804,
+      "ref": "T",
+      "alt": "C",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "SLCO1B1",
+      "trait": "Statin-Induced Myopathy Risk",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "TT": {"label": "Normal function", "rr": 1.0},
+          "TC": {"label": "Intermediate function", "rr": 4.5, "note": "Increased myopathy risk with simvastatin"},
+          "CC": {"label": "Poor function", "rr": 16.9, "note": "Significantly increased myopathy risk"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "SLCO1B1*5 variant reduces hepatic uptake of statins, increasing blood levels and risk of muscle-related side effects, particularly with simvastatin. Lower statin doses or alternative statins may be appropriate.",
+        "limitations": ["Risk varies by statin type", "Other factors affect myopathy risk"]
+      },
+      "evidence": [
+        {"pmid": "18650507", "study_type": "GWAS", "n": 300000, "replicated": true},
+        {"pmid": "24918167", "study_type": "Clinical implementation", "n": 2000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs4244285",
+      "chr": "10",
+      "pos": 96541616,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP2C19",
+      "trait": "Drug Metabolism (CYP2C19*2)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Normal metabolizer", "rr": 1.0},
+          "GA": {"label": "Intermediate metabolizer", "rr": 1.5, "note": "Reduced clopidogrel activation"},
+          "AA": {"label": "Poor metabolizer", "rr": 3.0, "note": "Significantly reduced clopidogrel effect"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP2C19*2 is a loss-of-function variant affecting metabolism of clopidogrel, proton pump inhibitors, and some antidepressants. Poor metabolizers may have reduced clopidogrel efficacy, increasing cardiovascular event risk.",
+        "limitations": ["Consult prescribing clinician before medication changes", "Alternative antiplatelet therapy may be considered"]
+      },
+      "evidence": [
+        {"pmid": "20801498", "study_type": "Meta-analysis", "n": 11959, "replicated": true},
+        {"pmid": "19809470", "study_type": "Clinical trial", "n": 13608, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1065852",
+      "chr": "22",
+      "pos": 42523943,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP2D6",
+      "trait": "Drug Metabolism (CYP2D6)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Normal metabolizer", "rr": 1.0},
+          "GA": {"label": "Intermediate metabolizer", "rr": 1.5},
+          "AA": {"label": "Poor metabolizer", "rr": 2.0, "note": "Altered response to codeine, tamoxifen, antidepressants"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP2D6 metabolizes approximately 25% of clinically used drugs. Poor metabolizers may have altered responses to codeine (reduced efficacy), tamoxifen, beta-blockers, and many antidepressants.",
+        "limitations": ["CYP2D6 phenotype requires multiple variant assessment", "Copy number variations not captured", "Consult pharmacist for comprehensive assessment"]
+      },
+      "evidence": [
+        {"pmid": "23486447", "study_type": "Clinical guidelines", "n": 50000, "replicated": true},
+        {"pmid": "26417955", "study_type": "Systematic review", "n": 100000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs9923231",
+      "chr": "16",
+      "pos": 31096368,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "VKORC1",
+      "trait": "Warfarin Sensitivity",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal sensitivity", "rr": 1.0, "note": "Standard warfarin dosing"},
+          "CT": {"label": "Intermediate sensitivity", "rr": 1.5, "note": "May require dose reduction"},
+          "TT": {"label": "High sensitivity", "rr": 2.5, "note": "Requires significantly lower warfarin dose"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "VKORC1 variants strongly influence warfarin dose requirements. Individuals with the T allele typically require lower warfarin doses to achieve therapeutic anticoagulation.",
+        "limitations": ["Warfarin dosing should be guided by INR monitoring", "Other genetic and non-genetic factors affect dosing"]
+      },
+      "evidence": [
+        {"pmid": "15930419", "study_type": "GWAS", "n": 2500, "replicated": true},
+        {"pmid": "19228618", "study_type": "Clinical trial", "n": 1015, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1799853",
+      "chr": "10",
+      "pos": 96702047,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP2C9",
+      "trait": "Drug Metabolism (CYP2C9*2)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal metabolizer", "rr": 1.0},
+          "CT": {"label": "Intermediate metabolizer", "rr": 1.3},
+          "TT": {"label": "Poor metabolizer", "rr": 1.8, "note": "Reduced warfarin metabolism"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP2C9*2 reduces enzyme activity, affecting metabolism of warfarin, phenytoin, NSAIDs, and sulfonylureas. Poor metabolizers may require dose adjustments for affected medications.",
+        "limitations": ["Multiple CYP2C9 variants should be assessed together", "Consult prescribing clinician for medication adjustments"]
+      },
+      "evidence": [
+        {"pmid": "15930419", "study_type": "GWAS", "n": 2500, "replicated": true},
+        {"pmid": "23486447", "study_type": "Clinical guidelines", "n": 50000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1800460",
+      "chr": "6",
+      "pos": 18139228,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "TPMT",
+      "trait": "Thiopurine Toxicity Risk (TPMT*3B)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Normal activity", "rr": 1.0},
+          "GA": {"label": "Intermediate activity", "rr": 5.0, "note": "Dose reduction recommended"},
+          "AA": {"label": "Deficient", "rr": 100.0, "note": "CRITICAL: Severe toxicity risk, major dose reduction required"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "TPMT deficiency causes severe, potentially life-threatening toxicity from thiopurine drugs (azathioprine, mercaptopurine, thioguanine) used in autoimmune diseases and cancer. Testing is strongly recommended before prescribing these medications.",
+        "limitations": ["CRITICAL SAFETY FINDING - discuss with prescribing clinician immediately if taking or considering thiopurines"]
+      },
+      "evidence": [
+        {"pmid": "23422873", "study_type": "Clinical guidelines", "n": 100000, "replicated": true},
+        {"pmid": "21270794", "study_type": "Systematic review", "n": 50000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs7903146",
+      "chr": "10",
+      "pos": 114758349,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Metabolic"],
+      "gene": "TCF7L2",
+      "trait": "Type 2 Diabetes Risk",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.37,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "40-70",
+          "risk": 0.12
+        }
+      },
+      "interpretation": {
+        "plain_language": "TCF7L2 is the strongest common genetic risk factor for type 2 diabetes. This variant affects beta cell function and incretin signaling. Risk is modifiable through lifestyle factors.",
+        "limitations": ["Lifestyle factors (diet, exercise, weight) strongly modify risk", "Genetic risk does not determine outcome"]
+      },
+      "evidence": [
+        {"pmid": "16415884", "study_type": "Original discovery", "n": 2158, "replicated": true},
+        {"pmid": "17463246", "study_type": "Meta-analysis", "n": 35000, "replicated": true},
+        {"pmid": "22101970", "study_type": "GWAS meta-analysis", "n": 149821, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs9939609",
+      "chr": "16",
+      "pos": 53820527,
+      "ref": "T",
+      "alt": "A",
+      "category": ["Health", "Metabolic", "Traits"],
+      "gene": "FTO",
+      "trait": "Obesity Susceptibility",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.32
+      },
+      "interpretation": {
+        "plain_language": "FTO is the most replicated obesity gene. Each risk allele increases BMI by approximately 0.4 kg/m². Importantly, physical activity can neutralize the genetic effect on obesity risk.",
+        "limitations": ["Effect can be completely attenuated by regular physical activity", "Explains only small fraction of weight variation"]
+      },
+      "evidence": [
+        {"pmid": "17434869", "study_type": "GWAS", "n": 38759, "replicated": true},
+        {"pmid": "23697881", "study_type": "Intervention study", "n": 218166, "replicated": true},
+        {"pmid": "22344221", "study_type": "Meta-analysis", "n": 45000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1801282",
+      "chr": "3",
+      "pos": 12393125,
+      "ref": "C",
+      "alt": "G",
+      "category": ["Health", "Metabolic"],
+      "gene": "PPARG",
+      "trait": "Insulin Sensitivity (Pro12Ala)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "G",
+        "per_allele_or": 0.80
+      },
+      "interpretation": {
+        "plain_language": "The PPARG Ala12 variant is associated with improved insulin sensitivity and reduced type 2 diabetes risk. This is a protective variant.",
+        "limitations": ["Protective effect modest", "Effect may vary by adiposity status"]
+      },
+      "evidence": [
+        {"pmid": "10758173", "study_type": "Meta-analysis", "n": 3000, "replicated": true},
+        {"pmid": "17327436", "study_type": "GWAS meta-analysis", "n": 90000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs2187668",
+      "chr": "6",
+      "pos": 32717244,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Autoimmune"],
+      "gene": "HLA-DQA1",
+      "trait": "Celiac Disease Risk (HLA-DQ2.5)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 7.0,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "all",
+          "risk": 0.01
+        }
+      },
+      "interpretation": {
+        "plain_language": "HLA-DQ2.5 is necessary but not sufficient for celiac disease. Approximately 95% of celiac patients carry HLA-DQ2 or DQ8. However, only 3-5% of people with these markers develop celiac disease.",
+        "limitations": ["Presence of HLA-DQ2/DQ8 is necessary but not sufficient for celiac disease", "Environmental trigger (gluten exposure) required"]
+      },
+      "evidence": [
+        {"pmid": "18311140", "study_type": "GWAS", "n": 4533, "replicated": true},
+        {"pmid": "20190752", "study_type": "Meta-analysis", "n": 15000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs2476601",
+      "chr": "1",
+      "pos": 114377568,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Autoimmune"],
+      "gene": "PTPN22",
+      "trait": "Multiple Autoimmune Disease Risk (R620W)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.9
+      },
+      "interpretation": {
+        "plain_language": "PTPN22 R620W is associated with increased risk of multiple autoimmune diseases including rheumatoid arthritis, type 1 diabetes, systemic lupus, and autoimmune thyroid disease.",
+        "limitations": ["Risk shared across multiple autoimmune conditions", "Absolute risk for any specific condition remains low"]
+      },
+      "evidence": [
+        {"pmid": "15208781", "study_type": "GWAS", "n": 3000, "replicated": true},
+        {"pmid": "16380915", "study_type": "Meta-analysis", "n": 30000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1042522",
+      "chr": "17",
+      "pos": 7579472,
+      "ref": "G",
+      "alt": "C",
+      "category": ["Health", "Cancer"],
+      "gene": "TP53",
+      "trait": "General Cancer Risk (Codon 72)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 1.2
+      },
+      "interpretation": {
+        "plain_language": "The TP53 codon 72 polymorphism has modest associations with various cancer types. The Pro72 variant may have different apoptotic properties than the Arg72 variant.",
+        "limitations": ["Effect sizes are modest", "Cancer risk influenced by many factors beyond this variant"]
+      },
+      "evidence": [
+        {"pmid": "19047179", "study_type": "Meta-analysis", "n": 40000, "replicated": true},
+        {"pmid": "12569571", "study_type": "Functional study", "n": 500, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs2981582",
+      "chr": "10",
+      "pos": 123352317,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Cancer"],
+      "gene": "FGFR2",
+      "trait": "Breast Cancer Risk",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.26,
+        "baseline_absolute_risk": {
+          "population": "European women",
+          "age_band": "lifetime",
+          "risk": 0.12
+        }
+      },
+      "interpretation": {
+        "plain_language": "FGFR2 variants are among the most replicated breast cancer susceptibility loci. Risk is primarily for estrogen receptor positive breast cancer.",
+        "limitations": ["Does not replace clinical risk assessment", "Mammography screening guidelines should be followed"]
+      },
+      "evidence": [
+        {"pmid": "17529967", "study_type": "GWAS", "n": 4398, "replicated": true},
+        {"pmid": "18006640", "study_type": "Replication", "n": 30000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs6983267",
+      "chr": "8",
+      "pos": 128482487,
+      "ref": "T",
+      "alt": "G",
+      "category": ["Health", "Cancer"],
+      "gene": "MYC",
+      "trait": "Colorectal Cancer Risk (8q24)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "G",
+        "per_allele_or": 1.27,
+        "baseline_absolute_risk": {
+          "population": "European",
+          "age_band": "lifetime",
+          "risk": 0.05
+        }
+      },
+      "interpretation": {
+        "plain_language": "This 8q24 variant affects MYC oncogene regulation and is associated with colorectal and prostate cancer risk. Regular colorectal cancer screening is important regardless of genetic risk.",
+        "limitations": ["Screening recommendations should follow clinical guidelines", "Lifestyle factors strongly influence colorectal cancer risk"]
+      },
+      "evidence": [
+        {"pmid": "17618283", "study_type": "GWAS", "n": 7500, "replicated": true},
+        {"pmid": "17934461", "study_type": "Fine mapping", "n": 8000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1447295",
+      "chr": "8",
+      "pos": 128477789,
+      "ref": "C",
+      "alt": "A",
+      "category": ["Health", "Cancer"],
+      "gene": "8q24",
+      "trait": "Prostate Cancer Risk",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.62,
+        "baseline_absolute_risk": {
+          "population": "European men",
+          "age_band": "lifetime",
+          "risk": 0.15
+        }
+      },
+      "interpretation": {
+        "plain_language": "This 8q24 variant is associated with increased prostate cancer risk, with stronger effects in men of African ancestry. PSA screening discussions should consider multiple risk factors.",
+        "limitations": ["Higher effect in African ancestry populations", "Does not replace PSA screening decisions with healthcare provider"]
+      },
+      "evidence": [
+        {"pmid": "16710414", "study_type": "GWAS", "n": 3000, "replicated": true},
+        {"pmid": "17618284", "study_type": "Replication", "n": 8000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs401681",
+      "chr": "5",
+      "pos": 1322087,
+      "ref": "T",
+      "alt": "C",
+      "category": ["Health", "Cancer"],
+      "gene": "TERT-CLPTM1L",
+      "trait": "Lung Cancer & Multiple Cancers",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 1.15
+      },
+      "interpretation": {
+        "plain_language": "TERT region variants are associated with multiple cancer types including lung, bladder, and prostate cancer. The telomerase reverse transcriptase gene plays a key role in cellular immortalization.",
+        "limitations": ["Smoking remains the dominant lung cancer risk factor", "Variant effect modest compared to smoking"]
+      },
+      "evidence": [
+        {"pmid": "18385676", "study_type": "GWAS", "n": 5739, "replicated": true},
+        {"pmid": "19836008", "study_type": "GWAS", "n": 13784, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs12913832",
+      "chr": "15",
+      "pos": 28365618,
+      "ref": "A",
+      "alt": "G",
+      "category": ["Traits", "Physical"],
+      "gene": "HERC2/OCA2",
+      "trait": "Eye Color",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "AA": {"label": "Likely brown eyes", "rr": 1.0},
+          "AG": {"label": "Variable - green/hazel likely", "rr": 1.0},
+          "GG": {"label": "Likely blue/green eyes", "rr": 1.0}
+        }
+      },
+      "interpretation": {
+        "plain_language": "This variant near OCA2 is the primary determinant of blue versus brown eye color in Europeans. The G allele is strongly associated with blue eyes, while AA typically results in brown eyes.",
+        "limitations": ["Eye color influenced by multiple genes", "Prediction accuracy varies by ancestry"]
+      },
+      "evidence": [
+        {"pmid": "18252222", "study_type": "GWAS", "n": 5000, "replicated": true},
+        {"pmid": "18172690", "study_type": "Association study", "n": 6000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs4988235",
+      "chr": "2",
+      "pos": 136608646,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Traits", "Nutrigenomics"],
+      "gene": "LCT",
+      "trait": "Lactose Tolerance",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Lactase non-persistent (likely lactose intolerant)", "rr": 1.0},
+          "GA": {"label": "Variable lactose tolerance", "rr": 1.0},
+          "AA": {"label": "Lactase persistent (lactose tolerant)", "rr": 1.0}
+        }
+      },
+      "interpretation": {
+        "plain_language": "This variant determines whether lactase production continues into adulthood. The A allele allows continued lactose digestion, while GG typically results in lactose intolerance after childhood.",
+        "limitations": ["Symptoms vary by individual", "Dairy tolerance can be managed through diet modifications"]
+      },
+      "evidence": [
+        {"pmid": "14647206", "study_type": "Association study", "n": 230, "replicated": true},
+        {"pmid": "15106124", "study_type": "Replication", "n": 2000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1815739",
+      "chr": "11",
+      "pos": 66560624,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Traits", "Athletic"],
+      "gene": "ACTN3",
+      "trait": "Muscle Fiber Composition (R577X)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Sprint/power advantage - functional α-actinin-3", "rr": 1.0},
+          "CT": {"label": "Mixed muscle fiber type", "rr": 1.0},
+          "TT": {"label": "Endurance advantage - no α-actinin-3", "rr": 1.0}
+        }
+      },
+      "interpretation": {
+        "plain_language": "ACTN3 R577X determines presence of α-actinin-3 in fast-twitch muscle fibers. The CC genotype is overrepresented in elite sprinters, while TT is more common in endurance athletes. However, elite performance depends on many factors.",
+        "limitations": ["Athletic performance determined by many genetic and environmental factors", "Training response more important than single gene variants"]
+      },
+      "evidence": [
+        {"pmid": "12879365", "study_type": "Association study", "n": 400, "replicated": true},
+        {"pmid": "18043716", "study_type": "Meta-analysis", "n": 5000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs4680",
+      "chr": "22",
+      "pos": 19963748,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Traits", "Behavioral"],
+      "gene": "COMT",
+      "trait": "Stress Response & Cognition (Val158Met)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Warrior - stress resilient, lower baseline dopamine", "rr": 1.0, "note": "Better under acute stress, lower executive function at baseline"},
+          "GA": {"label": "Balanced stress response", "rr": 1.0},
+          "AA": {"label": "Worrier - stress sensitive, higher baseline dopamine", "rr": 1.0, "note": "Better executive function at baseline, more affected by stress"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "COMT Val158Met affects dopamine breakdown in the prefrontal cortex. The 'Warrior' (Val/Val) variant breaks down dopamine quickly, conferring stress resilience but lower baseline cognition. The 'Worrier' (Met/Met) variant has opposite effects.",
+        "limitations": ["Behavioral genetics explains only a fraction of personality variance", "Gene-environment interactions are substantial", "Labels are simplifications of complex neurobiology"]
+      },
+      "evidence": [
+        {"pmid": "16533509", "study_type": "Association study", "n": 2000, "replicated": true},
+        {"pmid": "18665898", "study_type": "Meta-analysis", "n": 8000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs53576",
+      "chr": "3",
+      "pos": 8762685,
+      "ref": "A",
+      "alt": "G",
+      "category": ["Traits", "Behavioral"],
+      "gene": "OXTR",
+      "trait": "Empathy & Social Bonding",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "AA": {"label": "Lower social sensitivity", "rr": 1.0, "note": "Potentially more resilient to negative social environments"},
+          "AG": {"label": "Moderate social sensitivity", "rr": 1.0},
+          "GG": {"label": "Higher empathy and social sensitivity", "rr": 1.0, "note": "More responsive to both positive and negative social cues"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "This oxytocin receptor variant is associated with social behavior and empathy. GG carriers tend to show higher empathy but may also be more sensitive to social stress. Effects are modest and highly context-dependent.",
+        "limitations": ["Behavioral genetics explains only a fraction of social behavior", "Gene-environment interactions are substantial", "Not deterministic of social abilities"]
+      },
+      "evidence": [
+        {"pmid": "19706216", "study_type": "Association study", "n": 200, "replicated": true},
+        {"pmid": "21955175", "study_type": "Meta-analysis", "n": 5000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs1800497",
+      "chr": "11",
+      "pos": 113400106,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Traits", "Behavioral"],
+      "gene": "ANKK1/DRD2",
+      "trait": "Reward Sensitivity & Addiction Risk (Taq1A)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.5
+      },
+      "interpretation": {
+        "plain_language": "This variant near the dopamine D2 receptor is associated with reduced D2 receptor density. Carriers may have increased novelty-seeking behavior and modestly elevated addiction susceptibility.",
+        "limitations": ["Addiction risk determined by many factors", "Not predictive at individual level", "Environment plays dominant role"]
+      },
+      "evidence": [
+        {"pmid": "15866551", "study_type": "Meta-analysis", "n": 7000, "replicated": true},
+        {"pmid": "18302698", "study_type": "Association study", "n": 1000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs6265",
+      "chr": "11",
+      "pos": 27679916,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Traits", "Behavioral", "Neurological"],
+      "gene": "BDNF",
+      "trait": "Memory & Learning (Val66Met)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Val/Val - typical BDNF secretion", "rr": 1.0, "note": "Better episodic memory, larger hippocampal volume"},
+          "CT": {"label": "Val/Met - intermediate", "rr": 1.0},
+          "TT": {"label": "Met/Met - reduced activity-dependent BDNF", "rr": 1.0, "note": "May have reduced memory performance, response to exercise"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "BDNF Val66Met affects brain-derived neurotrophic factor secretion, influencing memory and neuroplasticity. The Met variant is associated with reduced hippocampal volume and memory performance, though effects are modest.",
+        "limitations": ["Individual variation in memory is multifactorial", "Exercise can increase BDNF regardless of genotype", "Not deterministic of cognitive abilities"]
+      },
+      "evidence": [
+        {"pmid": "12895999", "study_type": "Association study", "n": 600, "replicated": true},
+        {"pmid": "17895389", "study_type": "Meta-analysis", "n": 3000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs671",
+      "chr": "12",
+      "pos": 112241766,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Traits", "Metabolic"],
+      "gene": "ALDH2",
+      "trait": "Alcohol Flush Reaction",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "No flush reaction - normal alcohol metabolism", "rr": 1.0},
+          "GA": {"label": "Moderate flush reaction", "rr": 1.0, "note": "Some alcohol intolerance"},
+          "AA": {"label": "Severe flush reaction - alcohol intolerance", "rr": 1.0, "note": "Should avoid alcohol"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "ALDH2*2 variant causes deficient acetaldehyde breakdown, resulting in facial flushing, nausea, and rapid heartbeat after alcohol consumption. This variant is common in East Asian populations and is associated with reduced alcoholism risk but increased esophageal cancer risk with chronic alcohol use.",
+        "limitations": ["AA homozygotes have significantly elevated esophageal cancer risk if drinking", "Protective against alcoholism due to unpleasant reaction"]
+      },
+      "evidence": [
+        {"pmid": "9168915", "study_type": "Association study", "n": 2000, "replicated": true},
+        {"pmid": "20029823", "study_type": "Meta-analysis", "n": 10000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs762551",
+      "chr": "15",
+      "pos": 75041917,
+      "ref": "A",
+      "alt": "C",
+      "category": ["Traits", "Nutrigenomics"],
+      "gene": "CYP1A2",
+      "trait": "Caffeine Metabolism",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "AA": {"label": "Fast caffeine metabolizer", "rr": 1.0, "note": "Caffeine cleared more quickly"},
+          "AC": {"label": "Intermediate metabolizer", "rr": 1.0},
+          "CC": {"label": "Slow caffeine metabolizer", "rr": 1.0, "note": "Caffeine effects last longer, may increase heart disease risk with high intake"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP1A2 variants affect caffeine metabolism speed. Slow metabolizers may experience longer-lasting caffeine effects and some studies suggest increased cardiovascular risk with high coffee intake in this group.",
+        "limitations": ["Optimal caffeine intake is individual", "Other factors affect caffeine sensitivity"]
+      },
+      "evidence": [
+        {"pmid": "16522833", "study_type": "Association study", "n": 4028, "replicated": true},
+        {"pmid": "18349528", "study_type": "Replication", "n": 1000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs602662",
+      "chr": "19",
+      "pos": 49206674,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "FUT2",
+      "trait": "Vitamin B12 Levels",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 1.3
+      },
+      "interpretation": {
+        "plain_language": "FUT2 variants affect vitamin B12 absorption and gut microbiome composition. Non-secretors (AA) may have lower B12 levels and different gut bacterial populations.",
+        "limitations": ["B12 supplementation can correct deficiency", "Regular monitoring recommended for vegetarians/vegans"]
+      },
+      "evidence": [
+        {"pmid": "19706216", "study_type": "GWAS", "n": 3000, "replicated": true},
+        {"pmid": "20818333", "study_type": "Association study", "n": 1500, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs2282679",
+      "chr": "4",
+      "pos": 72608383,
+      "ref": "G",
+      "alt": "T",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "GC",
+      "trait": "Vitamin D Levels",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.4
+      },
+      "interpretation": {
+        "plain_language": "GC (vitamin D binding protein) variants affect circulating vitamin D levels. Carriers of certain variants may have lower vitamin D despite adequate intake and may benefit from monitoring.",
+        "limitations": ["Vitamin D status affected by sun exposure, diet, and supplementation", "Testing recommended to confirm status"]
+      },
+      "evidence": [
+        {"pmid": "20541252", "study_type": "GWAS", "n": 33000, "replicated": true},
+        {"pmid": "21098657", "study_type": "Meta-analysis", "n": 15000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs1799945",
+      "chr": "6",
+      "pos": 26091179,
+      "ref": "C",
+      "alt": "G",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "HFE",
+      "trait": "Iron Absorption (H63D)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal iron absorption", "rr": 1.0},
+          "CG": {"label": "Slightly increased absorption", "rr": 1.3, "note": "Hemochromatosis carrier"},
+          "GG": {"label": "Increased iron absorption", "rr": 2.0, "note": "Monitor iron levels"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "HFE H63D variant increases iron absorption. Compound heterozygotes (with C282Y) or homozygotes may develop iron overload over time. Periodic ferritin monitoring is recommended.",
+        "limitations": ["Lower penetrance than C282Y", "Many carriers never develop clinical iron overload"]
+      },
+      "evidence": [
+        {"pmid": "11017806", "study_type": "Association study", "n": 5000, "replicated": true},
+        {"pmid": "16472821", "study_type": "Meta-analysis", "n": 30000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs1800562",
+      "chr": "6",
+      "pos": 26093141,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "HFE",
+      "trait": "Hereditary Hemochromatosis (C282Y)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Normal", "rr": 1.0},
+          "GA": {"label": "Carrier - typically unaffected", "rr": 2.0, "note": "Consider ferritin monitoring"},
+          "AA": {"label": "Homozygous - high iron overload risk", "rr": 50.0, "note": "Regular monitoring and potential phlebotomy needed"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "HFE C282Y homozygosity is the most common cause of hereditary hemochromatosis. Untreated, iron overload can damage liver, heart, and pancreas. Early detection and treatment (phlebotomy) prevents complications.",
+        "limitations": ["Penetrance is incomplete - many homozygotes don't develop clinical disease", "Men at higher risk than premenopausal women"]
+      },
+      "evidence": [
+        {"pmid": "8696333", "study_type": "Original discovery", "n": 1000, "replicated": true},
+        {"pmid": "19124847", "study_type": "Meta-analysis", "n": 100000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs174546",
+      "chr": "11",
+      "pos": 61597212,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "FADS1",
+      "trait": "Omega-3 Fatty Acid Conversion",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.2
+      },
+      "interpretation": {
+        "plain_language": "FADS1 variants affect conversion of plant omega-3s (ALA) to EPA and DHA. Poor converters may benefit more from direct EPA/DHA sources (fish oil) rather than relying on plant-based omega-3s.",
+        "limitations": ["Effect on health outcomes indirect", "Direct EPA/DHA supplementation bypasses conversion"]
+      },
+      "evidence": [
+        {"pmid": "21829377", "study_type": "GWAS", "n": 8866, "replicated": true},
+        {"pmid": "20686565", "study_type": "Meta-analysis", "n": 100000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs713598",
+      "chr": "7",
+      "pos": 141972804,
+      "ref": "G",
+      "alt": "C",
+      "category": ["Traits", "Taste"],
+      "gene": "TAS2R38",
+      "trait": "Bitter Taste Perception (PTC/PROP)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "GG": {"label": "Non-taster", "rr": 1.0, "note": "Cannot taste PTC/PROP bitter compounds"},
+          "GC": {"label": "Medium taster", "rr": 1.0},
+          "CC": {"label": "Strong bitter taster", "rr": 1.0, "note": "Very sensitive to bitter compounds"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "TAS2R38 variants determine sensitivity to PTC/PROP bitter compounds found in cruciferous vegetables (broccoli, Brussels sprouts) and some medications. Non-tasters may find these vegetables more palatable.",
+        "limitations": ["Many other bitter receptors exist", "Food preference influenced by many factors"]
+      },
+      "evidence": [
+        {"pmid": "12595690", "study_type": "Association study", "n": 1000, "replicated": true},
+        {"pmid": "15883421", "study_type": "Replication", "n": 2000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs17822931",
+      "chr": "16",
+      "pos": 48258198,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Traits", "Physical"],
+      "gene": "ABCC11",
+      "trait": "Earwax Type & Body Odor",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Wet earwax, typical body odor", "rr": 1.0},
+          "CT": {"label": "Intermediate", "rr": 1.0},
+          "TT": {"label": "Dry earwax, reduced body odor", "rr": 1.0, "note": "May not need antiperspirant"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "This ABCC11 variant determines earwax consistency and axillary body odor. The dry earwax/low odor variant (TT) is common in East Asian populations. Individuals with this genotype produce less of the precursors for body odor.",
+        "limitations": ["Primarily of interest for personal care product choices", "No health implications"]
+      },
+      "evidence": [
+        {"pmid": "16444273", "study_type": "Association study", "n": 2000, "replicated": true},
+        {"pmid": "20592563", "study_type": "Functional study", "n": 500, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1805007",
+      "chr": "16",
+      "pos": 89919709,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Traits", "Physical", "Health"],
+      "gene": "MC1R",
+      "trait": "Red Hair & Fair Skin (R151C)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 2.5
+      },
+      "interpretation": {
+        "plain_language": "MC1R variants are associated with red hair, fair skin, freckling, and increased skin cancer risk due to reduced eumelanin production. Sun protection is especially important for carriers.",
+        "limitations": ["Multiple MC1R variants contribute to phenotype", "Skin cancer risk modifiable by sun protection"]
+      },
+      "evidence": [
+        {"pmid": "8872461", "study_type": "Association study", "n": 500, "replicated": true},
+        {"pmid": "18806926", "study_type": "Meta-analysis", "n": 15000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs11209026",
+      "chr": "1",
+      "pos": 67705958,
+      "ref": "G",
+      "alt": "A",
+      "category": ["Health", "Autoimmune"],
+      "gene": "IL23R",
+      "trait": "Inflammatory Bowel Disease Protection (R381Q)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "A",
+        "per_allele_or": 0.45
+      },
+      "interpretation": {
+        "plain_language": "This IL23R variant is protective against Crohn's disease, ulcerative colitis, and psoriasis. Carriers have approximately 50% reduced risk of inflammatory bowel disease.",
+        "limitations": ["Protective variant - no action needed", "Does not eliminate IBD risk entirely"]
+      },
+      "evidence": [
+        {"pmid": "17435756", "study_type": "GWAS", "n": 1000, "replicated": true},
+        {"pmid": "17554261", "study_type": "Replication", "n": 9000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs334",
+      "chr": "11",
+      "pos": 5248232,
+      "ref": "A",
+      "alt": "T",
+      "category": ["Health", "Carrier Status"],
+      "gene": "HBB",
+      "trait": "Sickle Cell Trait",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "AA": {"label": "Normal hemoglobin", "rr": 1.0},
+          "AT": {"label": "Sickle cell trait (carrier)", "rr": 1.0, "note": "Protective against malaria, partner testing recommended"},
+          "TT": {"label": "Sickle cell disease", "rr": 100.0, "note": "Significant health condition requiring medical management"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "Sickle cell trait (carrier status) provides some malaria protection. Carriers are generally healthy but should inform healthcare providers and consider partner testing before pregnancy.",
+        "limitations": ["Carriers may have rare complications at extreme altitude", "Sickle cell disease (TT) requires comprehensive medical care"]
+      },
+      "evidence": [
+        {"pmid": "16493693", "study_type": "Clinical guidelines", "n": 100000, "replicated": true},
+        {"pmid": "17596168", "study_type": "Association study", "n": 5000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1801131",
+      "chr": "1",
+      "pos": 11794419,
+      "ref": "A",
+      "alt": "C",
+      "category": ["Health", "Nutrigenomics"],
+      "gene": "MTHFR",
+      "trait": "Folate Metabolism (A1298C)",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 1.2
+      },
+      "interpretation": {
+        "plain_language": "MTHFR A1298C has a milder effect on enzyme activity than C677T. Compound heterozygosity with C677T may have additive effects on folate metabolism.",
+        "limitations": ["Milder effect than C677T", "Clinical significance as single variant is limited"]
+      },
+      "evidence": [
+        {"pmid": "10686568", "study_type": "Association study", "n": 500, "replicated": true},
+        {"pmid": "15060097", "study_type": "Meta-analysis", "n": 5000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs1057910",
+      "chr": "10",
+      "pos": 96741053,
+      "ref": "A",
+      "alt": "C",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP2C9",
+      "trait": "Drug Metabolism (CYP2C9*3)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "AA": {"label": "Normal metabolizer", "rr": 1.0},
+          "AC": {"label": "Intermediate metabolizer", "rr": 1.5},
+          "CC": {"label": "Poor metabolizer", "rr": 2.5, "note": "Significantly reduced warfarin metabolism"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP2C9*3 has a stronger effect than *2 on enzyme activity. Poor metabolizers require significant dose reductions for warfarin and may have altered responses to other CYP2C9 substrates.",
+        "limitations": ["Multiple CYP2C9 variants should be assessed together", "Consult prescribing clinician for warfarin dose adjustments"]
+      },
+      "evidence": [
+        {"pmid": "15930419", "study_type": "GWAS", "n": 2500, "replicated": true},
+        {"pmid": "23486447", "study_type": "Clinical guidelines", "n": 50000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs12248560",
+      "chr": "10",
+      "pos": 96521657,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP2C19",
+      "trait": "Drug Metabolism (CYP2C19*17)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal metabolizer", "rr": 1.0},
+          "CT": {"label": "Rapid metabolizer", "rr": 1.0, "note": "Enhanced clopidogrel activation"},
+          "TT": {"label": "Ultrarapid metabolizer", "rr": 1.0, "note": "May require higher doses of some medications"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP2C19*17 is a gain-of-function variant increasing enzyme activity. Ultrarapid metabolizers may have enhanced clopidogrel response but potentially reduced efficacy of medications inactivated by CYP2C19.",
+        "limitations": ["Overall metabolizer status depends on both gain and loss of function alleles", "Clinical significance varies by medication"]
+      },
+      "evidence": [
+        {"pmid": "16815318", "study_type": "Discovery", "n": 150, "replicated": true},
+        {"pmid": "21270786", "study_type": "Meta-analysis", "n": 10000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs1045642",
+      "chr": "7",
+      "pos": 87138645,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "ABCB1",
+      "trait": "Drug Transport (P-glycoprotein C3435T)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal P-gp function", "rr": 1.0},
+          "CT": {"label": "Intermediate", "rr": 1.2},
+          "TT": {"label": "Reduced P-gp function", "rr": 1.5, "note": "May have higher drug levels"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "P-glycoprotein is an efflux pump affecting absorption and distribution of many drugs including digoxin, immunosuppressants, and chemotherapy agents. Reduced function may lead to higher drug levels.",
+        "limitations": ["Effect varies significantly by substrate drug", "Clinical implementation limited by inconsistent findings"]
+      },
+      "evidence": [
+        {"pmid": "10673277", "study_type": "Association study", "n": 500, "replicated": true},
+        {"pmid": "15087604", "study_type": "Meta-analysis", "n": 3000, "replicated": true}
+      ],
+      "confidence": "Low"
+    },
+    {
+      "rsid": "rs776746",
+      "chr": "7",
+      "pos": 99652770,
+      "ref": "T",
+      "alt": "C",
+      "category": ["Health", "Pharmacogenomics"],
+      "gene": "CYP3A5",
+      "trait": "Drug Metabolism (CYP3A5*3)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "TT": {"label": "CYP3A5 expressor", "rr": 1.0, "note": "Higher tacrolimus dose may be needed"},
+          "CT": {"label": "Intermediate expressor", "rr": 1.3},
+          "CC": {"label": "CYP3A5 non-expressor", "rr": 1.5, "note": "Lower tacrolimus doses typically needed"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "CYP3A5*3 is a splice variant affecting enzyme expression. Non-expressors (CC) may require lower doses of tacrolimus and other CYP3A5 substrates. Expression is more common in people of African ancestry.",
+        "limitations": ["Tacrolimus dosing guided by drug level monitoring", "One of several factors affecting immunosuppressant dosing"]
+      },
+      "evidence": [
+        {"pmid": "11740341", "study_type": "Discovery", "n": 100, "replicated": true},
+        {"pmid": "22759602", "study_type": "Clinical guidelines", "n": 10000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs2231142",
+      "chr": "4",
+      "pos": 89011416,
+      "ref": "C",
+      "alt": "A",
+      "category": ["Health", "Pharmacogenomics", "Metabolic"],
+      "gene": "ABCG2",
+      "trait": "Drug Transport & Uric Acid (BCRP Q141K)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Normal function", "rr": 1.0},
+          "CA": {"label": "Reduced function", "rr": 1.5, "note": "Higher rosuvastatin levels, increased gout risk"},
+          "AA": {"label": "Low function", "rr": 2.5, "note": "Significantly higher rosuvastatin levels"}
+        }
+      },
+      "interpretation": {
+        "plain_language": "ABCG2 Q141K reduces transporter function, affecting rosuvastatin pharmacokinetics (FDA-labeled) and uric acid excretion (associated with gout risk).",
+        "limitations": ["Rosuvastatin dosing may need adjustment", "Gout risk influenced by multiple factors"]
+      },
+      "evidence": [
+        {"pmid": "19407245", "study_type": "GWAS", "n": 28000, "replicated": true},
+        {"pmid": "23548568", "study_type": "Clinical pharmacogenomics", "n": 2000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs780094",
+      "chr": "2",
+      "pos": 27730940,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Metabolic"],
+      "gene": "GCKR",
+      "trait": "Triglyceride Levels",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.15
+      },
+      "interpretation": {
+        "plain_language": "GCKR variants affect glucose and lipid metabolism in a complex pattern - paradoxically associated with lower fasting glucose but higher triglycerides.",
+        "limitations": ["Metabolic effects are complex", "Triglyceride management through lifestyle remains important"]
+      },
+      "evidence": [
+        {"pmid": "18372903", "study_type": "GWAS", "n": 5000, "replicated": true},
+        {"pmid": "22101970", "study_type": "Meta-analysis", "n": 149821, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs17782313",
+      "chr": "18",
+      "pos": 60183864,
+      "ref": "T",
+      "alt": "C",
+      "category": ["Health", "Metabolic", "Traits"],
+      "gene": "MC4R",
+      "trait": "Obesity & Appetite Regulation",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 1.12
+      },
+      "interpretation": {
+        "plain_language": "MC4R variants affect appetite regulation through the leptin-melanocortin pathway. Carriers may have increased appetite and modest weight gain tendency.",
+        "limitations": ["Effect size modest", "Weight management through lifestyle effective regardless of genotype"]
+      },
+      "evidence": [
+        {"pmid": "18454148", "study_type": "GWAS", "n": 16876, "replicated": true},
+        {"pmid": "19165484", "study_type": "Meta-analysis", "n": 77000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs1800795",
+      "chr": "7",
+      "pos": 22766645,
+      "ref": "G",
+      "alt": "C",
+      "category": ["Health", "Inflammatory"],
+      "gene": "IL6",
+      "trait": "Inflammatory Response",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "C",
+        "per_allele_or": 1.2
+      },
+      "interpretation": {
+        "plain_language": "IL-6 promoter variants affect inflammatory cytokine production. Higher IL-6 levels are associated with cardiovascular disease, diabetes, and certain cancers through chronic inflammation.",
+        "limitations": ["Inflammatory markers affected by many lifestyle factors", "Anti-inflammatory lifestyle beneficial regardless of genotype"]
+      },
+      "evidence": [
+        {"pmid": "11278932", "study_type": "Association study", "n": 1000, "replicated": true},
+        {"pmid": "16740138", "study_type": "Meta-analysis", "n": 15000, "replicated": true}
+      ],
+      "confidence": "Moderate"
+    },
+    {
+      "rsid": "rs3184504",
+      "chr": "12",
+      "pos": 111884608,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Health", "Autoimmune", "Cardiovascular"],
+      "gene": "SH2B3",
+      "trait": "Autoimmune & Cardiovascular Risk",
+      "risk_model": {
+        "type": "allele_dose",
+        "risk_allele": "T",
+        "per_allele_or": 1.3
+      },
+      "interpretation": {
+        "plain_language": "SH2B3 variants are associated with multiple autoimmune conditions (celiac disease, type 1 diabetes, rheumatoid arthritis) and also with cardiovascular traits including blood pressure.",
+        "limitations": ["Pleiotropic effects on multiple traits", "Individual risk for any specific condition remains low"]
+      },
+      "evidence": [
+        {"pmid": "19430480", "study_type": "GWAS", "n": 23000, "replicated": true},
+        {"pmid": "17554300", "study_type": "Multi-trait GWAS", "n": 340000, "replicated": true}
+      ],
+      "confidence": "High"
+    },
+    {
+      "rsid": "rs10246939",
+      "chr": "2",
+      "pos": 227090937,
+      "ref": "C",
+      "alt": "T",
+      "category": ["Traits", "Taste"],
+      "gene": "TAS2R38",
+      "trait": "Bitter Taste (I296V)",
+      "risk_model": {
+        "type": "genotype_category",
+        "categories": {
+          "CC": {"label": "Strong taster haplotype component", "rr": 1.0},
+          "CT": {"label": "Intermediate", "rr": 1.0},
+          "TT": {"label": "Non-taster haplotype component", "rr": 1.0}
+        }
+      },
+      "interpretation": {
+        "plain_language": "Part of the TAS2R38 haplotype determining bitter taste perception. Combined with other TAS2R38 variants to predict overall taster status.",
+        "limitations": ["Full haplotype (PAV vs AVI) determines phenotype", "One of three key positions"]
+      },
+      "evidence": [
+        {"pmid": "12595690", "study_type": "Association study", "n": 1000, "replicated": true}
+      ],
+      "confidence": "High"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "dna-insights-testing-infrastructure",
+  "version": "1.0.0",
+  "description": "Medical-grade testing infrastructure for DNA analysis",
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest run --coverage --reporter=junit --reporter=default"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.0.4",
+    "@vitest/ui": "^1.0.4",
+    "vitest": "^1.0.4",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "testing",
+    "vitest",
+    "medical-grade",
+    "pharmacogenomics",
+    "dna-analysis"
+  ]
+}

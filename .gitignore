@@ -1,0 +1,44 @@
+# Test Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Vitest
+.vitest/
+
+# Test Results
+junit.xml
+test-results/
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+.cache/
